@@ -23,4 +23,9 @@ export class PasswordService {
       return false;
     }
   }
+
+    /** Brûle le même temps de calcul qu'une vérification (anti-énumération). */
+  async burn(plain: string): Promise<void> {
+    await this.hash(plain);
+  }
 }

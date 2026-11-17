@@ -1,4 +1,7 @@
 export * from './authenticated-user.js';
+export * from './auth.constants.js';
+export * from './token-hash.js';
+export * from './client-meta.decorator.js';
 export * from './password.service.js';
 export * from './access-token.service.js';
 export * from './public.decorator.js';

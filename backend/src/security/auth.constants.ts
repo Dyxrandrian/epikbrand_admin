@@ -1,0 +1,5 @@
+export const MIN_PASSWORD_LENGTH = 10;
+export const MAX_PASSWORD_LENGTH = 128;
+export const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+export const ACCOUNT_LOCK_MINUTES = 15;
+export const VERIFY_EMAIL_TTL_HOURS = 24;

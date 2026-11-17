@@ -42,8 +42,11 @@ export class NotAuthenticatedException extends AppException {
 
 /** 403 : authentifié mais droits insuffisants. */
 export class AccessDeniedException extends AppException {
-  constructor(message = "Vous n'avez pas les droits nécessaires pour cette action.") {
-    super(ErrorCode.FORBIDDEN, message, HttpStatus.FORBIDDEN);
+  constructor(
+    message = "Vous n'avez pas les droits nécessaires pour cette action.",
+    code: ErrorCode = ErrorCode.FORBIDDEN,
+  ) {
+    super(code, message, HttpStatus.FORBIDDEN);
   }
 }
 
@@ -71,5 +74,23 @@ export class BusinessRuleException extends AppException {
     code: ErrorCode = ErrorCode.BUSINESS_RULE_VIOLATION,
   ) {
     super(code, message, HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+}
+
+/** 400 : jeton à usage unique (e-mail, mot de passe, invitation) invalide, expiré ou déjà utilisé. */
+export class InvalidTokenException extends AppException {
+  constructor(message = 'Ce lien est invalide ou a expiré.') {
+    super(ErrorCode.INVALID_TOKEN, message, HttpStatus.BAD_REQUEST);
+  }
+}
+
+/** 429 : compte verrouillé temporairement après trop d'échecs de connexion. */
+export class AccountLockedException extends AppException {
+  constructor(minutes: number) {
+    super(
+      ErrorCode.ACCOUNT_LOCKED,
+      `Compte temporairement verrouillé après trop de tentatives. Réessayez dans ${minutes} minute(s).`,
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
   }
 }

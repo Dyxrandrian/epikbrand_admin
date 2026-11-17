@@ -10,11 +10,4 @@ export class HealthController {
   check() {
     return { status: 'ok' };
   }
-
-  // TEMPORAIRE : à supprimer après vérification de l'étape 4
-  @Roles(UserRole.ADMIN)
-  @Get('secure')
-  secure(@CurrentUser() user: AuthenticatedUser) {
-    return { id: user.id, role: user.role, companyId: user.companyId };
-  }
 }
