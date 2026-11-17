@@ -1,0 +1,40 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Company } from './company.entity.js';
+import { Client } from './client.entity.js';
+import { User } from './user.entity.js';
+
+@Entity('interactions')
+export class Interaction {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ name: 'company_id', type: 'uuid' })
+  companyId: string;
+
+  @Column({ name: 'client_id', type: 'uuid' })
+  clientId: string;
+
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
+  userId: string | null;
+
+  @Column({ length: 50 })
+  type: string;
+
+  @Column({ type: 'text' })
+  summary: string;
+
+  @Column({ name: 'interaction_date', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  interactionDate: Date;
+
+  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'company_id' })
+  company: Company;
+
+  @ManyToOne(() => Client, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'client_id' })
+  client: Client;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+}
