@@ -17,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'epikbrand_db',
   // Pointe vers src/entity/*.entity.ts en dev et dist/entity/*.entity.js en prod
-  entities: [join(__dirname, '/../entity/**/*.entity{.ts,.js}')],
+  entities: [join(__dirname, '/../entities/**/*.entity{.ts,.js}')],
   migrations: [join(__dirname, '/migration/*{.ts,.js}')],
   synchronize: false, // Toujours false en production pour passer par les migrations
   logging: process.env.NODE_ENV !== 'production',

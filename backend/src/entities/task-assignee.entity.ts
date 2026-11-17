@@ -1,0 +1,23 @@
+import { Entity, PrimaryColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Task } from './task.entity.js';
+import { User } from './user.entity.js';
+
+@Entity('task_assignees')
+export class TaskAssignee {
+  @PrimaryColumn({ name: 'task_id', type: 'uuid' })
+  taskId: string;
+
+  @PrimaryColumn({ name: 'user_id', type: 'uuid' })
+  userId: string;
+
+  @CreateDateColumn({ name: 'assigned_at', type: 'timestamptz' })
+  assignedAt: Date;
+
+  @ManyToOne(() => Task, (task) => task.assignees, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'task_id' })
+  task: Task;
+
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+}

@@ -8,6 +8,7 @@ export enum RequestStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
   REJECTED = 'rejected',
+  CANCELLED = 'cancelled',
 }
 
 export enum ProjectStatus {
@@ -23,9 +24,17 @@ export enum TaskStatus {
   DONE = 'done',
 }
 
+export enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  URGENT = 'urgent',
+}
+
 export enum InvoiceDocumentType {
   QUOTE = 'quote',
   INVOICE = 'invoice',
+  CREDIT_NOTE = 'credit_note',
 }
 
 export enum InvoicePaymentStatus {
@@ -33,12 +42,20 @@ export enum InvoicePaymentStatus {
   SENT = 'sent',
   PAID = 'paid',
   OVERDUE = 'overdue',
+  CANCELLED = 'cancelled',
 }
 
 export enum ExpenseStatus {
   PENDING = 'pending',
   PAID = 'paid',
   CANCELLED = 'cancelled',
+}
+
+export enum ExpenseRecurrence {
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  QUARTERLY = 'quarterly',
+  YEARLY = 'yearly',
 }
 
 export enum SalaryStatus {
@@ -58,4 +75,19 @@ export enum PaymentMethod {
 export enum SalaryItemType {
   EARNING = 'earning',
   DEDUCTION = 'deduction',
+}
+
+export enum UserTokenPurpose {
+  VERIFY_EMAIL = 'verify_email',
+  RESET_PASSWORD = 'reset_password',
+  INVITATION = 'invitation',
+}
+
+/** Colonne VARCHAR + CHECK (pas un type ENUM PostgreSQL) */
+export enum MediaPurpose {
+  ATTACHMENT = 'attachment',
+  LOGO = 'logo',
+  COVER = 'cover',
+  AVATAR = 'avatar',
+  RECEIPT = 'receipt',
 }
