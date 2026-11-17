@@ -7,6 +7,7 @@ import {
   AllExceptionsFilter,
   validationExceptionFactory,
 } from './exceptions/index.js';
+import { ResponseInterceptor } from './interceptors/response.interceptor.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +31,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.enableShutdownHooks();
 

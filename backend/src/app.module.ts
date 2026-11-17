@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { validateEnv } from './config/env.validation.js';
 import { buildDataSourceOptions } from './database/database.config.js';
+import { HealthModule } from './module/health.module.js';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { buildDataSourceOptions } from './database/database.config.js';
     TypeOrmModule.forRootAsync({
       useFactory: () => buildDataSourceOptions(process.env),
     }),
+    HealthModule,
   ],
 })
 export class AppModule {}
