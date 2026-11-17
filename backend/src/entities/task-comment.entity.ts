@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Task } from './task.entity.js';
-import { User } from './user.entity.js';
+import type { Company } from './company.entity.js';
+import type { Task } from './task.entity.js';
+import type { User } from './user.entity.js';
 
 @Entity('task_comments')
 export class TaskComment {
@@ -29,15 +29,15 @@ export class TaskComment {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Task, (task) => task.comments, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Task', (task: any) => task.comments, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'task_id' })
   task: Task;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   user: User | null;
 }

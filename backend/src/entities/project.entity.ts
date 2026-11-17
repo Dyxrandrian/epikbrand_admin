@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, VersionColumn, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Client } from './client.entity.js';
-import { Task } from './task.entity.js';
+import type { Company } from './company.entity.js';
+import type { Client } from './client.entity.js';
+import type { Task } from './task.entity.js';
 import { ProjectStatus } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -45,14 +45,14 @@ export class Project {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Client, { nullable: false, onDelete: 'RESTRICT' })
+  @ManyToOne('Client', { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'client_id' })
   client: Client;
 
-  @OneToMany(() => Task, (task) => task.project)
+  @OneToMany('Task', (task: any) => task.project)
   tasks: Task[];
 }

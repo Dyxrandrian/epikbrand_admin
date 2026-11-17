@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, VersionColumn, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Interaction } from './interaction.entity.js';
+import type { Company } from './company.entity.js';
+import type { Interaction } from './interaction.entity.js';
 
 @Index('idx_search_clients', { synchronize: false })
 @Entity('clients')
@@ -40,10 +40,10 @@ export class Client {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @OneToMany(() => Interaction, (interaction) => interaction.client)
+  @OneToMany('Interaction', (interaction: any) => interaction.client)
   interactions: Interaction[];
 }

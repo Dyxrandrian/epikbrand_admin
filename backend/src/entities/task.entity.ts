@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, VersionColumn, Check, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Project } from './project.entity.js';
-import { User } from './user.entity.js';
-import { TaskAssignee } from './task-assignee.entity.js';
-import { TaskLabel } from './task-label.entity.js';
-import { TaskComment } from './task-comment.entity.js';
+import type { Company } from './company.entity.js';
+import type { Project } from './project.entity.js';
+import type { User } from './user.entity.js';
+import type { TaskAssignee } from './task-assignee.entity.js';
+import type { TaskLabel } from './task-label.entity.js';
+import type { TaskComment } from './task-comment.entity.js';
 import { TaskStatus, TaskPriority } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -65,31 +65,31 @@ export class Task {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Project, (project) => project.tasks, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Project', (project: any) => project.tasks, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  @ManyToOne(() => Task, (task) => task.subtasks, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne('Task', (task: any) => task.subtasks, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parent_task_id' })
   parentTask: Task | null;
 
-  @OneToMany(() => Task, (task) => task.parentTask)
+  @OneToMany('Task', (task: any) => task.parentTask)
   subtasks: Task[];
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'created_by' })
   createdBy: User | null;
 
-  @OneToMany(() => TaskAssignee, (assignee) => assignee.task)
+  @OneToMany('TaskAssignee', (assignee: any) => assignee.task)
   assignees: TaskAssignee[];
 
-  @OneToMany(() => TaskLabel, (taskLabel) => taskLabel.task)
+  @OneToMany('TaskLabel', (taskLabel: any) => taskLabel.task)
   taskLabels: TaskLabel[];
 
-  @OneToMany(() => TaskComment, (comment) => comment.task)
+  @OneToMany('TaskComment', (comment: any) => comment.task)
   comments: TaskComment[];
 }

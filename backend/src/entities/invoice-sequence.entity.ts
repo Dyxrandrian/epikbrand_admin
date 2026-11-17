@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Company } from './company.entity.js';
+import type { Company } from './company.entity.js';
 import { InvoiceDocumentType } from '../enums/app.enums.js';
 
 @Entity('invoice_sequences')
@@ -20,7 +20,7 @@ export class InvoiceSequence {
   @Column({ name: 'last_number', type: 'int', default: 0 })
   lastNumber: number;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Company } from './company.entity.js';
+import type { Company } from './company.entity.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Entity('leave_types')
@@ -17,7 +17,7 @@ export class LeaveType {
   @Column({ name: 'default_annual_days', type: 'numeric', precision: 5, scale: 1, nullable: true, transformer: numericTransformer })
   defaultAnnualDays: number | null;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }

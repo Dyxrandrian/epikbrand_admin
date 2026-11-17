@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Task } from './task.entity.js';
-import { Project } from './project.entity.js';
-import { AgencyArticle } from './agency-article.entity.js';
-import { User } from './user.entity.js';
+import type { Company } from './company.entity.js';
+import type { Task } from './task.entity.js';
+import type { Project } from './project.entity.js';
+import type { AgencyArticle } from './agency-article.entity.js';
+import type { User } from './user.entity.js';
 import { MediaPurpose } from '../enums/app.enums.js';
 import { bigintTransformer } from '../transformers/numeric.transformer.js';
 
@@ -51,23 +51,23 @@ export class MediaAttachment {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Task, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne('Task', { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'task_id' })
   task: Task | null;
 
-  @ManyToOne(() => Project, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne('Project', { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'project_id' })
   project: Project | null;
 
-  @ManyToOne(() => AgencyArticle, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne('AgencyArticle', { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'article_id' })
   article: AgencyArticle | null;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'uploaded_by' })
   uploadedBy: User | null;
 }

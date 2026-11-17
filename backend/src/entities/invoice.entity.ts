@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Unique, VersionColumn, Check, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Client } from './client.entity.js';
-import { Project } from './project.entity.js';
-import { InvoiceItem } from './invoice-item.entity.js';
+import type { Company } from './company.entity.js';
+import type { Client } from './client.entity.js';
+import type { Project } from './project.entity.js';
+import type { InvoiceItem } from './invoice-item.entity.js';
 import { InvoiceDocumentType, InvoicePaymentStatus, PaymentMethod } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -74,22 +74,22 @@ export class Invoice {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Client, { nullable: false, onDelete: 'RESTRICT' })
+  @ManyToOne('Client', { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'client_id' })
   client: Client;
 
-  @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('Project', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'project_id' })
   project: Project | null;
 
-  @ManyToOne(() => Invoice, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('Invoice', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'source_document_id' })
   sourceDocument: Invoice | null;
 
-  @OneToMany(() => InvoiceItem, (item) => item.invoice)
+  @OneToMany('InvoiceItem', (item: any) => item.invoice)
   items: InvoiceItem[];
 }

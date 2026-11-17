@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Company } from './company.entity.js';
+import type { Company } from './company.entity.js';
 
 @Entity('structure_element_types')
 @Unique(['companyId', 'slug'])
@@ -16,7 +16,7 @@ export class StructureElementType {
   @Column({ type: 'varchar', length: 100 })
   slug: string;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }

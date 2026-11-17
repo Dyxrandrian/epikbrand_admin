@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { UserToken } from './user-token.entity.js';
-import { RefreshToken } from './refresh-token.entity.js';
+import type { Company } from './company.entity.js';
+import type { UserToken } from './user-token.entity.js';
+import type { RefreshToken } from './refresh-token.entity.js';
 import { UserRole } from '../enums/app.enums.js';
 
 @Index('idx_search_users', { synchronize: false })
@@ -65,13 +65,16 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, (company) => company.users, { nullable: false, onDelete: 'CASCADE' })
+  // Use string 'Company' and type-only callback parameters
+  @ManyToOne('Company', (company: any) => company.users, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @OneToMany(() => UserToken, (token) => token.user)
+  // Use string 'UserToken'
+  @OneToMany('UserToken', (token: any) => token.user)
   tokens: UserToken[];
 
-  @OneToMany(() => RefreshToken, (token) => token.user)
+  // Use string 'RefreshToken'
+  @OneToMany('RefreshToken', (token: any) => token.user)
   refreshTokens: RefreshToken[];
 }

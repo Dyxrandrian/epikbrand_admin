@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Company } from './company.entity.js';
-import { User } from './user.entity.js';
-import { LeaveType } from './leave-type.entity.js';
+import type { Company } from './company.entity.js';
+import type { User } from './user.entity.js';
+import type { LeaveType } from './leave-type.entity.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Entity('leave_balances')
@@ -25,15 +25,15 @@ export class LeaveBalance {
   @Column({ name: 'allowance_days', type: 'numeric', precision: 5, scale: 1, default: 0, transformer: numericTransformer })
   allowanceDays: number;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => LeaveType, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('LeaveType', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'leave_type_id' })
   leaveType: LeaveType;
 }

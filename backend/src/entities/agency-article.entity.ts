@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, VersionColumn, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { ArticleSection } from './article-section.entity.js';
-import { ArticleCategory } from './article-category.entity.js';
-import { User } from './user.entity.js';
-import { AgencyArticleVersion } from './agency-article-version.entity.js';
+import type { Company } from './company.entity.js';
+import type { ArticleSection } from './article-section.entity.js';
+import type { ArticleCategory } from './article-category.entity.js';
+import type { User } from './user.entity.js';
+import type { AgencyArticleVersion } from './agency-article-version.entity.js';
 
 @Index('idx_search_articles', { synchronize: false })
 @Entity('agency_articles')
@@ -41,22 +41,22 @@ export class AgencyArticle {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => ArticleSection, { nullable: false, onDelete: 'RESTRICT' })
+  @ManyToOne('ArticleSection', { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'section_id' })
   section: ArticleSection;
 
-  @ManyToOne(() => ArticleCategory, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('ArticleCategory', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'category_id' })
   category: ArticleCategory | null;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'updated_by' })
   updatedBy: User | null;
 
-  @OneToMany(() => AgencyArticleVersion, (articleVersion) => articleVersion.article)
+  @OneToMany('AgencyArticleVersion', (articleVersion: any) => articleVersion.article)
   versions: AgencyArticleVersion[];
 }

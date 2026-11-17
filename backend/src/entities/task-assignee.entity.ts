@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Task } from './task.entity.js';
-import { User } from './user.entity.js';
+import type { Task } from './task.entity.js';
+import type { User } from './user.entity.js';
 
 @Entity('task_assignees')
 export class TaskAssignee {
@@ -13,11 +13,11 @@ export class TaskAssignee {
   @CreateDateColumn({ name: 'assigned_at', type: 'timestamptz' })
   assignedAt: Date;
 
-  @ManyToOne(() => Task, (task) => task.assignees, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Task', (task: any) => task.assignees, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'task_id' })
   task: Task;
 
-  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

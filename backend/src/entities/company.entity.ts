@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { User } from './user.entity.js';
+import type { User } from './user.entity.js';
 import { bigintTransformer, numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Entity('companies')
@@ -58,6 +58,6 @@ export class Company {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @OneToMany(() => User, (user) => user.company)
+  @OneToMany('User', (user: any) => user.company)
   users: User[];
 }

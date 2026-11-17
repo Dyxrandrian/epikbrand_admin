@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Check, Index } from 'typeorm';
-import { Company } from './company.entity.js';
-import { ExpenseCategory } from './expense-category.entity.js';
-import { Project } from './project.entity.js';
-import { User } from './user.entity.js';
-import { ExpenseItem } from './expense-item.entity.js';
+import type { Company } from './company.entity.js';
+import type { ExpenseCategory } from './expense-category.entity.js';
+import type { Project } from './project.entity.js';
+import type { User } from './user.entity.js';
+import type { ExpenseItem } from './expense-item.entity.js';
 import { ExpenseStatus, ExpenseRecurrence, PaymentMethod } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -78,26 +78,26 @@ export class Expense {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => ExpenseCategory, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('ExpenseCategory', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'category_id' })
   category: ExpenseCategory | null;
 
-  @ManyToOne(() => Project, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('Project', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'project_id' })
   project: Project | null;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   user: User | null;
 
-  @ManyToOne(() => Expense, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('Expense', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_expense_id' })
   parentExpense: Expense | null;
 
-  @OneToMany(() => ExpenseItem, (item) => item.expense)
+  @OneToMany('ExpenseItem', (item: any) => item.expense)
   items: ExpenseItem[];
 }

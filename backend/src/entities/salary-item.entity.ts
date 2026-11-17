@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Salary } from './salary.entity.js';
+import type { Salary } from './salary.entity.js';
 import { SalaryItemType } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -29,7 +29,7 @@ export class SalaryItem {
   @Column({ type: 'numeric', precision: 12, scale: 2, default: 0, transformer: numericTransformer })
   amount: number;
 
-  @ManyToOne(() => Salary, (salary) => salary.items, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Salary', (salary: any) => salary.items, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'salary_id' })
   salary: Salary;
 }

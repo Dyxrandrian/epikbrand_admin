@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Company } from './company.entity.js';
-import { StructureElementType } from './structure-element-type.entity.js';
+import type { Company } from './company.entity.js';
+import type { StructureElementType } from './structure-element-type.entity.js';
 
 @Entity('agency_structure')
 export class AgencyStructure {
@@ -25,11 +25,11 @@ export class AgencyStructure {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => StructureElementType, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('StructureElementType', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'type_id' })
   type: StructureElementType;
 }

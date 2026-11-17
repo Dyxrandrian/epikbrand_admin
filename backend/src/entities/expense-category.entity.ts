@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Company } from './company.entity.js';
+import type { Company } from './company.entity.js';
 
 @Entity('expense_categories')
 @Unique(['companyId', 'name'])
@@ -16,7 +16,7 @@ export class ExpenseCategory {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }

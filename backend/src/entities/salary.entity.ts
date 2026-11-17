@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Unique, Check } from 'typeorm';
-import { Company } from './company.entity.js';
-import { User } from './user.entity.js';
-import { SalaryItem } from './salary-item.entity.js';
+import type { Company } from './company.entity.js';
+import type { User } from './user.entity.js';
+import type { SalaryItem } from './salary-item.entity.js';
 import { SalaryStatus, PaymentMethod } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -54,14 +54,14 @@ export class Salary {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => SalaryItem, (item) => item.salary)
+  @OneToMany('SalaryItem', (item: any) => item.salary)
   items: SalaryItem[];
 }

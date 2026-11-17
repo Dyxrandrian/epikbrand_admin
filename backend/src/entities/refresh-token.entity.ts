@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity.js';
+import type { User } from './user.entity.js';
 
 @Entity('refresh_tokens')
 export class RefreshToken {
@@ -34,11 +34,11 @@ export class RefreshToken {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.refreshTokens, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', (user: any) => user.refreshTokens, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => RefreshToken, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('RefreshToken', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'replaced_by' })
   replacedBy: RefreshToken | null;
 }

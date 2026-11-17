@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check } from 'typeorm';
-import { Company } from './company.entity.js';
-import { User } from './user.entity.js';
-import { LeaveType } from './leave-type.entity.js';
+import type { Company } from './company.entity.js';
+import type { User } from './user.entity.js';
+import type { LeaveType } from './leave-type.entity.js';
 import { RequestStatus } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
@@ -49,19 +49,19 @@ export class LeaveRequest {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => LeaveType, { nullable: false, onDelete: 'RESTRICT' })
+  @ManyToOne('LeaveType', { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'leave_type_id' })
   leaveType: LeaveType;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'reviewed_by' })
   reviewer: User | null;
 }

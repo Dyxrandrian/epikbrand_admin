@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Invoice } from './invoice.entity.js';
+import type { Invoice } from './invoice.entity.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Entity('invoice_items')
@@ -22,7 +22,7 @@ export class InvoiceItem {
   @Column({ name: 'unit_price', type: 'numeric', precision: 12, scale: 2, default: 0, transformer: numericTransformer })
   unitPrice: number;
 
-  @ManyToOne(() => Invoice, (invoice) => invoice.items, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Invoice', (invoice: any) => invoice.items, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'invoice_id' })
   invoice: Invoice;
 }

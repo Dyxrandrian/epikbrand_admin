@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Company } from './company.entity.js';
+import type { Company } from './company.entity.js';
 
 @Entity('labels')
 @Unique(['companyId', 'name'])
@@ -17,7 +17,7 @@ export class Label {
   @Column({ type: 'varchar', length: 7, default: '#6B7280' })
   color: string;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 }

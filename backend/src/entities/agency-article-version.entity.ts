@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { AgencyArticle } from './agency-article.entity.js';
-import { User } from './user.entity.js';
+import type { AgencyArticle } from './agency-article.entity.js';
+import type { User } from './user.entity.js';
 
 @Entity('agency_article_versions')
 @Unique(['articleId', 'version'])
@@ -26,11 +26,11 @@ export class AgencyArticleVersion {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => AgencyArticle, (article) => article.versions, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('AgencyArticle', (article: any) => article.versions, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'article_id' })
   article: AgencyArticle;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'edited_by' })
   editedBy: User | null;
 }

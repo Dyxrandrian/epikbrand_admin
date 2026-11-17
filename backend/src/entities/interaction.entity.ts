@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Company } from './company.entity.js';
-import { Client } from './client.entity.js';
-import { User } from './user.entity.js';
+import type { Company } from './company.entity.js';
+import type { Client } from './client.entity.js';
+import type { User } from './user.entity.js';
 
 @Entity('interactions')
 export class Interaction {
@@ -26,15 +26,15 @@ export class Interaction {
   @Column({ name: 'interaction_date', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   interactionDate: Date;
 
-  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => Client, (client) => client.interactions, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('Client', (client: any) => client.interactions, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'client_id' })
   client: Client;
 
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   user: User | null;
 }

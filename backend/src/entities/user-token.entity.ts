@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity.js';
 import { UserTokenPurpose } from '../enums/app.enums.js';
+import { User } from './user.entity.js';
+
 
 @Entity('user_tokens')
 export class UserToken {
@@ -26,7 +27,7 @@ export class UserToken {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.tokens, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne('User', (user: any) => user.tokens, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
