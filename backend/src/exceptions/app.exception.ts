@@ -32,8 +32,11 @@ export class ValidationFailedException extends AppException {
 
 /** 401 : non authentifié (jeton absent, expiré, identifiants faux…). */
 export class NotAuthenticatedException extends AppException {
-  constructor(message = 'Authentification requise.') {
-    super(ErrorCode.UNAUTHENTICATED, message, HttpStatus.UNAUTHORIZED);
+  constructor(
+    message = 'Authentification requise.',
+    code: ErrorCode = ErrorCode.UNAUTHENTICATED,
+  ) {
+    super(code, message, HttpStatus.UNAUTHORIZED);
   }
 }
 

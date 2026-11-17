@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { validateEnv } from './config/env.validation.js';
 import { buildDataSourceOptions } from './database/database.config.js';
 import { HealthModule } from './module/health.module.js';
+import { SecurityModule } from './module/security.module.js';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { HealthModule } from './module/health.module.js';
       useFactory: () => buildDataSourceOptions(process.env),
     }),
     HealthModule,
+    SecurityModule,
   ],
 })
 export class AppModule {}

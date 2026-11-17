@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { UserTokenPurpose } from '../enums/app.enums.js';
-import { User } from './user.entity.js';
+import type { User } from './user.entity.js';
 
 
 @Entity('user_tokens')
