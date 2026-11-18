@@ -14,7 +14,7 @@ export function buildDataSourceOptions(env: NodeJS.ProcessEnv): DataSourceOption
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
     entities: [join(currentDir, '..', 'entities', '**', '*.entity.{ts,js}')],
-    migrations: [join(currentDir, 'migrations', '*.{ts,js}')],
+    migrations: [join(currentDir, 'migration', '*.{ts,js}')],
     namingStrategy: new SnakeNamingStrategy(),
     synchronize: false,
     logging: env.DB_LOGGING === 'true',

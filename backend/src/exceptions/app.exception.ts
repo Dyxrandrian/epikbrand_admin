@@ -94,3 +94,21 @@ export class AccountLockedException extends AppException {
     );
   }
 }
+
+/** 422 : un identifiant du corps de la requête ne correspond à rien dans l'entreprise. */
+export class InvalidReferenceException extends AppException {
+  constructor(field: string, resource: string) {
+    super(
+      ErrorCode.INVALID_REFERENCE,
+      'Une référence est invalide.',
+      HttpStatus.UNPROCESSABLE_ENTITY,
+      [
+        {
+          field,
+          reason: 'referenceNotFound',
+          message: `${resource} introuvable.`,
+        },
+      ],
+    );
+  }
+}
