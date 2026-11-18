@@ -20,6 +20,10 @@ import {
 import type { AuthenticatedUser } from '../../security/index.js';
 import { MailService } from '../mail/mail.service.js';
 import { UserTokenService } from './user-token.service.js';
+import { AuditService } from '../audit/audit.service.js';
+import { snapshot } from '../audit/audit-changes.js';
+import { AuditAction, AuditEntityType } from '../../enums/audit.enums.js';
+import { USER_AUDIT_FIELDS } from '../audit/audit-fields.js';
 
 @Injectable()
 export class InvitationService {
@@ -32,7 +36,8 @@ export class InvitationService {
     private readonly userTokens: UserTokenService,
     private readonly passwords: PasswordService,
     private readonly mail: MailService,
-  ) {}
+    private readonly audit: AuditService,
+  ) { }
 
   async invite(admin: AuthenticatedUser, dto: InviteUserDto) {
     const existing = await this.users.findOne({
@@ -67,6 +72,18 @@ export class InvitationService {
         }),
       );
       await manager.query('INSERT INTO user_preferences (user_id) VALUES ($1)', [created.id]);
+
+      await this.audit.record(
+        {
+          action: AuditAction.CREATE,
+          entityType: AuditEntityType.USER,
+          entityId: created.id,
+          companyId: admin.companyId,
+          userId: admin.id,
+          changes: { after: snapshot(created, USER_AUDIT_FIELDS) },
+        },
+        manager,
+      );
 
       const rawToken = await this.userTokens.issue(
         manager,
@@ -139,6 +156,17 @@ export class InvitationService {
         User,
         { id: user.id },
         { passwordHash, isVerified: true, passwordChangedAt: new Date() },
+      );
+
+      await this.audit.record(
+        {
+          action: AuditAction.INVITATION_ACCEPTED,
+          entityType: AuditEntityType.USER,
+          entityId: user.id,
+          companyId: user.companyId,
+          userId: user.id,
+        },
+        manager,
       );
     });
 

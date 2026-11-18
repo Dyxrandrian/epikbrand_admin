@@ -112,3 +112,14 @@ export class InvalidReferenceException extends AppException {
     );
   }
 }
+
+/** 429 : trop de requêtes. */
+export class TooManyRequestsException extends AppException {
+  constructor(public readonly retryAfterSeconds: number) {
+    super(
+      ErrorCode.TOO_MANY_REQUESTS,
+      `Trop de requêtes. Réessayez dans ${retryAfterSeconds} seconde(s).`,
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+  }
+}

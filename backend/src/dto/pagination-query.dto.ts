@@ -13,7 +13,8 @@ import {
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
 
-export class PaginationQueryDto {
+/** Pagination seule : base commune de toutes les listes. */
+export class PageQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt({ message: 'page doit être un entier.' })
@@ -28,7 +29,10 @@ export class PaginationQueryDto {
     message: `per_page ne peut pas dépasser ${MAX_PAGE_SIZE}.`,
   })
   per_page: number = DEFAULT_PAGE_SIZE;
+}
 
+/** Listes métier : pagination + recherche, tri et relations. */
+export class PaginationQueryDto extends PageQueryDto {
   /** Recherche texte (insensible à la casse et aux accents, appliquée par le repository). */
   @IsOptional()
   @Transform(({ value }) =>

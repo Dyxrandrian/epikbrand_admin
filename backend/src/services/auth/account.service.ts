@@ -25,6 +25,8 @@ import {
 import { MailService } from '../mail/mail.service.js';
 import { SessionService } from './session.service.js';
 import { UserTokenService } from './user-token.service.js';
+import { AuditAction, AuditEntityType } from '../../enums/audit.enums.js';
+import { AuditService } from '../audit/audit.service.js';
 
 @Injectable()
 export class AccountService {
@@ -37,7 +39,8 @@ export class AccountService {
     private readonly passwords: PasswordService,
     private readonly sessions: SessionService,
     private readonly mail: MailService,
-  ) {}
+    private readonly audit: AuditService,
+  ) { }
 
   // ---------- Renvoi de l'e-mail de vérification ----------
 
@@ -139,6 +142,17 @@ export class AccountService {
         { userId: user.id, revokedAt: IsNull() },
         { revokedAt: new Date() },
       );
+
+      await this.audit.record(
+        {
+          action: AuditAction.PASSWORD_RESET,
+          entityType: AuditEntityType.USER,
+          entityId: user.id,
+          companyId: user.companyId,
+          userId: user.id,
+        },
+        manager,
+      );
     });
 
     return { message: 'Mot de passe modifié. Vous pouvez vous connecter.' };
@@ -164,7 +178,19 @@ export class AccountService {
     }
 
     const passwordHash = await this.passwords.hash(dto.new_password);
-    await this.users.update(userId, { passwordHash, passwordChangedAt: new Date() });
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(User, { id: userId }, { passwordHash, passwordChangedAt: new Date() });
+      await this.audit.record(
+        {
+          action: AuditAction.PASSWORD_CHANGED,
+          entityType: AuditEntityType.USER,
+          entityId: userId,
+          companyId: user.companyId,
+          userId,
+        },
+        manager,
+      );
+    });
 
     // Les autres sessions sont révoquées ; celle indiquée par keep_session_id est conservée
     await this.sessions.revokeOthers(userId, dto.keep_session_id);

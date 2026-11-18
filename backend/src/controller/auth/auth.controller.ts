@@ -20,7 +20,13 @@ import {
 } from '../../dto/auth/index.js';
 import { uuidPipe } from '../../dto/index.js';
 import { UserRole } from '../../enums/app.enums.js';
-import { ClientMeta, CurrentUser, Public, Roles } from '../../security/index.js';
+import {
+  ClientMeta,
+  CurrentUser,
+  Public,
+  RateLimit,
+  Roles,
+} from '../../security/index.js';
 import type { AuthenticatedUser, ClientMetadata } from '../../security/index.js';
 import { AccountService } from '../../services/auth/account.service.js';
 import { AuthService } from '../../services/auth/auth.service.js';
@@ -37,12 +43,14 @@ export class AuthController {
   // ---------- Publiques ----------
 
   @Public()
+  @RateLimit({ limit: 5, windowSeconds: 3600 })
   @Post('register')
   register(@Body() dto: RegisterCompanyDto) {
     return this.auth.registerCompany(dto);
   }
 
   @Public()
+  @RateLimit({ limit: 10, windowSeconds: 900 })
   @HttpCode(200)
   @Post('verify-email')
   verifyEmail(@Body() dto: VerifyEmailDto) {
@@ -50,6 +58,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 5, windowSeconds: 900 })
   @HttpCode(200)
   @Post('resend-verification')
   resendVerification(@Body() dto: EmailDto) {
@@ -57,6 +66,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 10, windowSeconds: 60 })
   @HttpCode(200)
   @Post('login')
   login(@Body() dto: LoginDto, @ClientMeta() meta: ClientMetadata) {
@@ -64,6 +74,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 30, windowSeconds: 60 })
   @HttpCode(200)
   @Post('refresh')
   refresh(@Body() dto: RefreshTokenDto, @ClientMeta() meta: ClientMetadata) {
@@ -71,6 +82,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 30, windowSeconds: 60 })
   @HttpCode(204)
   @Post('logout')
   logout(@Body() dto: RefreshTokenDto) {
@@ -78,6 +90,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 5, windowSeconds: 900 })
   @HttpCode(200)
   @Post('forgot-password')
   forgotPassword(@Body() dto: EmailDto) {
@@ -85,6 +98,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 10, windowSeconds: 900 })
   @HttpCode(200)
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
@@ -92,6 +106,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit({ limit: 10, windowSeconds: 900 })
   @HttpCode(200)
   @Post('accept-invitation')
   acceptInvitation(@Body() dto: AcceptInvitationDto) {
@@ -106,6 +121,7 @@ export class AuthController {
     return this.auth.logoutAll(user.id);
   }
 
+  @RateLimit({ limit: 5, windowSeconds: 900, scope: 'user' })
   @HttpCode(200)
   @Post('change-password')
   changePassword(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePasswordDto) {
@@ -129,12 +145,14 @@ export class AuthController {
   // ---------- Admin ----------
 
   @Roles(UserRole.ADMIN)
+  @RateLimit({ limit: 30, windowSeconds: 3600, scope: 'user' })
   @Post('invitations')
   invite(@CurrentUser() admin: AuthenticatedUser, @Body() dto: InviteUserDto) {
     return this.invitations.invite(admin, dto);
   }
 
   @Roles(UserRole.ADMIN)
+  @RateLimit({ limit: 30, windowSeconds: 3600, scope: 'user' })
   @HttpCode(200)
   @Post('invitations/:userId/resend')
   resendInvitation(

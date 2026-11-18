@@ -6,14 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity.js';
 import {
   AccessTokenService,
+  IpRateLimitGuard,
   JwtAuthGuard,
   PasswordService,
   RolesGuard,
+  UserRateLimitGuard,
 } from '../security/index.js';
+import { RateLimitModule } from './rate-limit.module.js';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    RateLimitModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -28,8 +32,11 @@ import {
   providers: [
     PasswordService,
     AccessTokenService,
-    { provide: APP_GUARD, useClass: JwtAuthGuard }, // 1er : qui es-tu ?
-    { provide: APP_GUARD, useClass: RolesGuard }, // 2e : as-tu le droit ?
+    // L'ordre ci-dessous est l'ordre d'exécution :
+    { provide: APP_GUARD, useClass: IpRateLimitGuard }, // 1. trop de requêtes depuis cette IP ?
+    { provide: APP_GUARD, useClass: JwtAuthGuard }, // 2. qui es-tu ?
+    { provide: APP_GUARD, useClass: UserRateLimitGuard }, // 3. trop de requêtes pour cet utilisateur ?
+    { provide: APP_GUARD, useClass: RolesGuard }, // 4. as-tu le droit ?
   ],
   exports: [PasswordService, AccessTokenService],
 })

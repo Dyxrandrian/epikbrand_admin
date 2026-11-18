@@ -1,6 +1,8 @@
 export * from './authenticated-user.js';
 export * from './auth.constants.js';
 export * from './token-hash.js';
+export * from './ip.js';
+export * from './request-context.js';
 export * from './client-meta.decorator.js';
 export * from './password.service.js';
 export * from './access-token.service.js';
@@ -9,3 +11,4 @@ export * from './roles.decorator.js';
 export * from './current-user.decorator.js';
 export * from './jwt-auth.guard.js';
 export * from './roles.guard.js';
+export * from './rate-limit/index.js';

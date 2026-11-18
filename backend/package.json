@@ -24,7 +24,8 @@
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "migration:show": "npm run typeorm -- migration:show"
+    "migration:show": "npm run typeorm -- migration:show",
+    "test:db:migrate": "tsx ./node_modules/typeorm/cli.js -d src/database/data-source.testdb.ts migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

@@ -1,0 +1,26 @@
+export enum AuditAction {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  ARCHIVE = 'archive',
+  RESTORE = 'restore',
+  VIEW = 'view',
+  EXPORT = 'export',
+  LOGIN = 'login',
+  ACCOUNT_LOCKED = 'account_locked',
+  PASSWORD_CHANGED = 'password_changed',
+  PASSWORD_RESET = 'password_reset',
+  INVITATION_ACCEPTED = 'invitation_accepted',
+}
+
+export enum AuditEntityType {
+  COMPANY = 'company',
+  USER = 'user',
+  CLIENT = 'client',
+  PROJECT = 'project',
+  TASK = 'task',
+  INVOICE = 'invoice',
+  EXPENSE = 'expense',
+  SALARY = 'salary',
+  ARTICLE = 'article',
+}

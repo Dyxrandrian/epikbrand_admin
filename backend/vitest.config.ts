@@ -8,5 +8,6 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.spec.ts'],
+    setupFiles: ['./src/testing/setup.ts'], // <-- Ajoute cette ligne
   },
 });

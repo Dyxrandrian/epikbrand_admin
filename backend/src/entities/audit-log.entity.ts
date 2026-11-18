@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { User } from './user.entity.js';
 
+@Index('idx_audit_company_created', ['companyId', 'createdAt'])
+@Index('idx_audit_entity', ['companyId', 'entityType', 'entityId'])
 @Entity('audit_logs')
 export class AuditLog {
   /** BIGSERIAL : renvoyé en string par pg */

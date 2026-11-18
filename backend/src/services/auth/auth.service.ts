@@ -32,6 +32,10 @@ import {
 import type { ClientMetadata } from '../../security/index.js';
 import { MailService } from '../mail/mail.service.js';
 import { SessionService } from './session.service.js';
+import { AuditAction, AuditEntityType } from '../../enums/audit.enums.js';
+import { snapshot } from '../audit/audit-changes.js';
+import { USER_AUDIT_FIELDS } from '../audit/audit-fields.js';
+import { AuditService } from '../audit/audit.service.js';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +48,7 @@ export class AuthService {
     private readonly sessions: SessionService,
     private readonly mail: MailService,
     private readonly userTokens: UserTokenService,
+    private readonly audit: AuditService,
   ) { }
 
   /** Crée l'entreprise, son premier admin et les données par défaut, en une transaction. */
@@ -91,6 +96,29 @@ export class AuthService {
           tokenHash: hashToken(verificationToken),
           expiresAt: new Date(Date.now() + VERIFY_EMAIL_TTL_HOURS * 3_600_000),
         }),
+      );
+      await this.audit.record(
+        {
+          action: AuditAction.CREATE,
+          entityType: AuditEntityType.COMPANY,
+          entityId: company.id,
+          companyId: company.id,
+          userId: user.id,
+          changes: { after: snapshot(company, ['name']) },
+        },
+        manager,
+      );
+
+      await this.audit.record(
+        {
+          action: AuditAction.CREATE,
+          entityType: AuditEntityType.USER,
+          entityId: user.id,
+          companyId: company.id,
+          userId: user.id,
+          changes: { after: snapshot(user, USER_AUDIT_FIELDS) },
+        },
+        manager,
       );
       return user;
     });
@@ -160,6 +188,14 @@ export class AuthService {
       lastLoginAt: new Date(),
     });
 
+    await this.audit.recordQuietly({
+      action: AuditAction.LOGIN,
+      entityType: AuditEntityType.USER,
+      entityId: user.id,
+      companyId: user.companyId,
+      userId: user.id,
+    });
+
     const tokens = await this.sessions.open(user, meta);
     return { ...tokens, user: toAuthUser(user) };
   }
@@ -183,6 +219,14 @@ export class AuthService {
     if (attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
       const lockedUntil = new Date(Date.now() + ACCOUNT_LOCK_MINUTES * 60_000);
       await this.users.update(user.id, { failedLoginAttempts: 0, lockedUntil });
+      await this.audit.recordQuietly({
+        action: AuditAction.ACCOUNT_LOCKED,
+        entityType: AuditEntityType.USER,
+        entityId: user.id,
+        companyId: user.companyId,
+        userId: null, // l'auteur des tentatives est inconnu
+        changes: { after: { locked_until: lockedUntil.toISOString() } },
+      });
       return lockedUntil;
     }
 
