@@ -2,10 +2,15 @@ import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, MoreThan, Not, Repository } from 'typeorm';
+import type { FindOptionsWhere } from 'typeorm';
 import { RefreshToken } from '../../entities/refresh-token.entity.js';
 import { User } from '../../entities/user.entity.js';
-import { ErrorCode, NotAuthenticatedException } from '../../exceptions/index.js';
+import {
+  ErrorCode,
+  NotAuthenticatedException,
+  ResourceNotFoundException,
+} from '../../exceptions/index.js';
 import { AccessTokenService, generateOpaqueToken, hashToken } from '../../security/index.js';
 import type { ClientMetadata } from '../../security/index.js';
 
@@ -14,6 +19,8 @@ export interface SessionTokens {
   refresh_token: string;
   token_type: 'Bearer';
   expires_in: number;
+  /** Identifiant (non secret) de la session, pour la repérer dans la liste. */
+  session_id: string;
 }
 
 @Injectable()
@@ -35,17 +42,18 @@ export class SessionService {
   /** Nouvelle connexion : nouvelle famille de jetons. */
   async open(user: User, meta: ClientMetadata): Promise<SessionTokens> {
     const raw = generateOpaqueToken();
+    const familyId = randomUUID();
     await this.refreshTokens.save(
       this.refreshTokens.create({
         userId: user.id,
-        familyId: randomUUID(),
+        familyId,
         tokenHash: hashToken(raw),
         expiresAt: new Date(Date.now() + this.refreshTtlMs),
         userAgent: meta.userAgent,
         ipAddress: meta.ip,
       }),
     );
-    return this.buildTokens(user, raw);
+    return this.buildTokens(user, raw, familyId);
   }
 
   /** Rotation à usage unique : l'ancien jeton est consommé, un nouveau le remplace. */
@@ -99,7 +107,7 @@ export class SessionService {
       await this.revokeFamily(record.familyId);
       throw this.invalidSession();
     }
-    return this.buildTokens(user, raw);
+    return this.buildTokens(user, raw, record.familyId);
   }
 
   /** Déconnexion d'une session (toute sa famille de jetons). */
@@ -108,6 +116,30 @@ export class SessionService {
       where: { tokenHash: hashToken(rawToken) },
     });
     if (record) await this.revokeFamily(record.familyId);
+  }
+
+  /** Sessions actives de l'utilisateur : un seul jeton non révoqué par famille. */
+  listActive(userId: string): Promise<RefreshToken[]> {
+    return this.refreshTokens.find({
+      where: { userId, revokedAt: IsNull(), expiresAt: MoreThan(new Date()) },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /** Révoque une session de CET utilisateur ; 404 si elle n'existe pas ou n'est pas à lui. */
+  async revokeSession(userId: string, sessionId: string): Promise<void> {
+    const result = await this.refreshTokens.update(
+      { userId, familyId: sessionId, revokedAt: IsNull() },
+      { revokedAt: new Date() },
+    );
+    if (!result.affected) throw new ResourceNotFoundException('Session');
+  }
+
+  /** Révoque toutes les sessions de l'utilisateur sauf, éventuellement, celle à conserver. */
+  async revokeOthers(userId: string, keepSessionId?: string): Promise<void> {
+    const where: FindOptionsWhere<RefreshToken> = { userId, revokedAt: IsNull() };
+    if (keepSessionId) where.familyId = Not(keepSessionId);
+    await this.refreshTokens.update(where, { revokedAt: new Date() });
   }
 
   async revokeFamily(familyId: string): Promise<void> {
@@ -124,12 +156,17 @@ export class SessionService {
     );
   }
 
-  private async buildTokens(user: User, refreshToken: string): Promise<SessionTokens> {
+  private async buildTokens(
+    user: User,
+    refreshToken: string,
+    familyId: string,
+  ): Promise<SessionTokens> {
     return {
       access_token: await this.accessTokens.sign(user.id, user.companyId),
       refresh_token: refreshToken,
       token_type: 'Bearer',
       expires_in: this.accessTtlSeconds,
+      session_id: familyId,
     };
   }
 

@@ -2,3 +2,8 @@ export * from './register-company.dto.js';
 export * from './login.dto.js';
 export * from './refresh-token.dto.js';
 export * from './verify-email.dto.js';
+export * from './email.dto.js';
+export * from './reset-password.dto.js';
+export * from './change-password.dto.js';
+export * from './accept-invitation.dto.js';
+export * from './invite-user.dto.js';

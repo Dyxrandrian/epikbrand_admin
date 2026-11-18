@@ -6,6 +6,7 @@ import { buildDataSourceOptions } from './database/database.config.js';
 import { HealthModule } from './module/health.module.js';
 import { SecurityModule } from './module/security.module.js';
 import { AuthModule } from './module/auth.module.js';
+import { ProfileModule } from './module/profile.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './module/auth.module.js';
     HealthModule,
     SecurityModule,
     AuthModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

@@ -10,7 +10,14 @@ function flatten(errors: ValidationError[], parentPath = ''): ErrorDetail[] {
 
     if (error.constraints) {
       for (const [reason, message] of Object.entries(error.constraints)) {
-        details.push({ field: path, reason, message });
+        details.push({
+          field: path,
+          reason,
+          message:
+            reason === 'whitelistValidation'
+              ? `Le champ « ${error.property} » n'est pas autorisé.`
+              : message,
+        });
       }
     }
     if (error.children?.length) {

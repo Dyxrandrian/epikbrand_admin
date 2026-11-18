@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { seedCompanyDefaults } from '../../database/seeds/company-defaults.js';
+import { UserTokenService } from './user-token.service.js';
 import type {
   LoginDto,
   RefreshTokenDto,
@@ -17,7 +18,6 @@ import {
   AccountLockedException,
   ConflictAppException,
   ErrorCode,
-  InvalidTokenException,
   NotAuthenticatedException,
 } from '../../exceptions/index.js';
 import { toAuthUser } from '../../mapper/user.mapper.js';
@@ -43,7 +43,8 @@ export class AuthService {
     private readonly passwords: PasswordService,
     private readonly sessions: SessionService,
     private readonly mail: MailService,
-  ) {}
+    private readonly userTokens: UserTokenService,
+  ) { }
 
   /** Crée l'entreprise, son premier admin et les données par défaut, en une transaction. */
   async registerCompany(dto: RegisterCompanyDto) {
@@ -109,21 +110,11 @@ export class AuthService {
 
   async verifyEmail(dto: VerifyEmailDto) {
     await this.dataSource.transaction(async (manager) => {
-      const record = await manager.findOne(UserToken, {
-        where: { tokenHash: hashToken(dto.token), purpose: UserTokenPurpose.VERIFY_EMAIL },
-      });
-      if (!record || record.usedAt || record.expiresAt.getTime() <= Date.now()) {
-        throw new InvalidTokenException();
-      }
-
-      // Consommation atomique : deux requêtes simultanées ne passent pas toutes les deux
-      const claimed = await manager.update(
-        UserToken,
-        { id: record.id, usedAt: IsNull() },
-        { usedAt: new Date() },
+      const record = await this.userTokens.consume(
+        manager,
+        dto.token,
+        UserTokenPurpose.VERIFY_EMAIL,
       );
-      if (!claimed.affected) throw new InvalidTokenException();
-
       await manager.update(User, { id: record.userId }, { isVerified: true });
     });
 

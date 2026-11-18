@@ -3,3 +3,6 @@ export const MAX_PASSWORD_LENGTH = 128;
 export const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 export const ACCOUNT_LOCK_MINUTES = 15;
 export const VERIFY_EMAIL_TTL_HOURS = 24;
+export const RESET_PASSWORD_TTL_HOURS = 1;
+export const INVITATION_TTL_DAYS = 7;
+export const TOKEN_RESEND_COOLDOWN_SECONDS = 60;

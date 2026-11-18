@@ -12,3 +12,15 @@ export function toAuthUser(user: User) {
     is_verified: user.isVerified,
   };
 }
+
+/** Profil complet : réservé à l'utilisateur lui-même (et, plus tard, admin/manager). */
+export function toProfile(user: User) {
+  return {
+    ...toAuthUser(user),
+    phone: user.phone,
+    address: user.address,
+    matricule: user.matricule,
+    last_login_at: user.lastLoginAt,
+    created_at: user.createdAt,
+  };
+}

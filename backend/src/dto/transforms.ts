@@ -5,3 +5,6 @@ export const trim = ({ value }: TransformFnParams) =>
 
 export const normalizeEmail = ({ value }: TransformFnParams) =>
   typeof value === 'string' ? value.trim().toLowerCase() : value;
+
+export const trimToNull = ({ value }: TransformFnParams) =>
+  typeof value === 'string' ? value.trim() || null : value;
