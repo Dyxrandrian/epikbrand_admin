@@ -28,3 +28,21 @@ export function applyWordSearch<T extends ObjectLiteral>(
     );
   });
 }
+
+/**
+ * Recherche qui s'appuie sur les index idx_search_* de PostSchema.
+ * `column` : la colonne indexée, entre guillemets (ex. "project"."title").
+ */
+export function applyIndexedWordSearch<T extends ObjectLiteral>(
+  qb: SelectQueryBuilder<T>,
+  column: string,
+  q: string | undefined,
+): void {
+  searchWords(q).forEach((word, index) => {
+    const param = `isearch_${index}`;
+    qb.andWhere(
+      `f_unaccent(${column}) ILIKE '%' || f_unaccent(CAST(:${param} AS text)) || '%'`,
+      { [param]: escapeLike(word) },
+    );
+  });
+}

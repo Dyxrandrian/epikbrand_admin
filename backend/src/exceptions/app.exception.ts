@@ -131,3 +131,10 @@ export class PotentialDuplicateException extends AppException {
     super(ErrorCode.POSSIBLE_DUPLICATE, message, HttpStatus.CONFLICT, undefined, { duplicates });
   }
 }
+
+/** 409 contournable : action lourde de conséquences (renvoyer la requête avec ?confirm=true). */
+export class ConfirmationRequiredException extends AppException {
+  constructor(message: string, meta: Record<string, unknown>) {
+    super(ErrorCode.CONFIRMATION_REQUIRED, message, HttpStatus.CONFLICT, undefined, meta);
+  }
+}

@@ -40,3 +40,11 @@ export const CLIENT_AUDIT_FIELDS = [
   'phone',
   'address',
 ] as const;
+
+export const PROJECT_AUDIT_FIELDS = [
+  'title',
+  'clientId',
+  'budgetHt',
+  'status',
+  'deadline',
+] as const;

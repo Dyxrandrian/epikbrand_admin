@@ -1,7 +1,8 @@
-import { Entity, PrimaryColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Task } from './task.entity.js';
 import type { User } from './user.entity.js';
 
+@Index('idx_task_assignees_user', { synchronize: false })
 @Entity('task_assignees')
 export class TaskAssignee {
   @PrimaryColumn({ name: 'task_id', type: 'uuid' })

@@ -7,6 +7,8 @@ import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Index('idx_projects_client', { synchronize: false })
 @Index('idx_search_projects', { synchronize: false })
+@Index('idx_projects_company_status', { synchronize: false })
+@Index('idx_projects_deadline', { synchronize: false })
 @Entity('projects')
 export class Project {
   @PrimaryGeneratedColumn('uuid')
