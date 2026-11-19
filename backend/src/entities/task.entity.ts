@@ -11,6 +11,9 @@ import { numericTransformer } from '../transformers/numeric.transformer.js';
 @Check('chk_task_dates', '"end_date" IS NULL OR "start_date" IS NULL OR "end_date" >= "start_date"')
 @Index('idx_search_tasks', { synchronize: false })
 @Index('idx_tasks_project', { synchronize: false })
+@Index('idx_tasks_company_status', { synchronize: false })
+@Index('idx_tasks_company_end', { synchronize: false })
+@Index('idx_tasks_parent', { synchronize: false })
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')

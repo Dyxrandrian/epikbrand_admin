@@ -63,8 +63,9 @@ export class ConflictAppException extends AppException {
   constructor(
     message: string,
     code: ErrorCode = ErrorCode.CONFLICT,
+    meta?: Record<string, unknown>,
   ) {
-    super(code, message, HttpStatus.CONFLICT);
+    super(code, message, HttpStatus.CONFLICT, undefined, meta);
   }
 }
 

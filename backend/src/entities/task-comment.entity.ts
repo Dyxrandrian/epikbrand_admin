@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { Task } from './task.entity.js';
 import type { User } from './user.entity.js';
 
 @Entity('task_comments')
+@Index('idx_task_comments_task', { synchronize: false })
 export class TaskComment {
   @PrimaryGeneratedColumn('uuid')
   id: string;

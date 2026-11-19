@@ -1,8 +1,10 @@
-import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Task } from './task.entity.js';
 import type { Label } from './label.entity.js';
 
+
 @Entity('task_labels')
+@Index('idx_task_labels_label', { synchronize: false })
 export class TaskLabel {
   @PrimaryColumn({ name: 'task_id', type: 'uuid' })
   taskId: string;

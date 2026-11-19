@@ -10,3 +10,5 @@ export * from './user.repository.js';
 export * from './config-item.repository.js';
 export * from './config-lists.repositories.js';
 export * from './interaction.repository.js';
+export * from './task.repository.js';
+export * from './task-comment.repository.js';
