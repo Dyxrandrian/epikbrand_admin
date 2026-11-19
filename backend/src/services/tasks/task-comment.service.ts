@@ -12,13 +12,17 @@ import { TaskRepository } from '../../repository/task.repository.js';
 import type { AuthenticatedUser } from '../../security/index.js';
 import type { TaskComment } from '../../entities/task-comment.entity.js';
 import { unique, viewerOf } from './task-rules.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { notificationTemplates } from '../notifications/notification-templates.js';
+import type { Task } from '../../entities/task.entity.js';
 
 @Injectable()
 export class TaskCommentService {
   constructor(
     private readonly comments: TaskCommentRepository,
     private readonly tasks: TaskRepository,
-  ) {}
+    private readonly notifications: NotificationService,
+  ) { }
 
   async list(viewer: AuthenticatedUser, taskId: string, query: PageQueryDto) {
     const ctx = viewerOf(viewer);
@@ -28,6 +32,7 @@ export class TaskCommentService {
     return result.map(toTaskComment);
   }
 
+  /** L'auteur est toujours l'utilisateur connecté. Tâche active et visible requise. */
   /** L'auteur est toujours l'utilisateur connecté. Tâche active et visible requise. */
   async create(viewer: AuthenticatedUser, taskId: string, dto: CreateTaskCommentDto) {
     const { companyId } = viewer;
@@ -40,30 +45,53 @@ export class TaskCommentService {
       content: dto.content,
       mentionedUserIds: mentions,
     });
+
+    await this.notifications.notify({
+      companyId,
+      recipientIds: mentions,
+      actorId: viewer.id,
+      ...notificationTemplates.taskMention({ id: task.id, title: task.title }, viewer.name),
+    });
     return toTaskComment(await this.comments.getDetailed(companyId, created.id));
   }
 
-  /** Seul l'auteur modifie son commentaire. */
+  /** Seul l'auteur modifie son commentaire. Seules les NOUVELLES mentions sont notifiées. */
   async update(viewer: AuthenticatedUser, id: string, dto: UpdateTaskCommentDto) {
     const { companyId } = viewer;
     const comment = await this.comments.getById(companyId, id);
     if (comment.userId !== viewer.id) {
-      throw new AccessDeniedException('Seul l\'auteur peut modifier ce commentaire.');
+      throw new AccessDeniedException("Seul l'auteur peut modifier ce commentaire.");
     }
 
     const changes: Record<string, unknown> = {};
     if (dto.content !== undefined) changes.content = dto.content;
+
+    let mentionTask: Task | null = null;
+    let addedMentions: string[] = [];
     if (dto.mentioned_user_ids !== undefined) {
       const task = await this.tasks.getByIdIncludingArchived(companyId, comment.taskId);
-      changes.mentionedUserIds = await this.resolveMentions(
-        companyId,
-        task.projectId,
-        dto.mentioned_user_ids,
-      );
+      const mentions = await this.resolveMentions(companyId, task.projectId, dto.mentioned_user_ids);
+      changes.mentionedUserIds = mentions;
+
+      const previous = new Set(comment.mentionedUserIds);
+      mentionTask = task;
+      addedMentions = task.archivedAt ? [] : mentions.filter((userId) => !previous.has(userId));
     }
 
     if (Object.keys(changes).length > 0) {
       await this.comments.updateById(companyId, id, changes as UpdateChanges<TaskComment>);
+    }
+
+    if (mentionTask && addedMentions.length > 0) {
+      await this.notifications.notify({
+        companyId,
+        recipientIds: addedMentions,
+        actorId: viewer.id,
+        ...notificationTemplates.taskMention(
+          { id: mentionTask.id, title: mentionTask.title },
+          viewer.name,
+        ),
+      });
     }
     return toTaskComment(await this.comments.getDetailed(companyId, id));
   }

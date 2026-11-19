@@ -442,12 +442,12 @@ export class TaskRepository extends ArchivableTenantRepository<Task> {
     return rows.length > 0;
   }
 
-  /** Remplace les responsables de plusieurs tâches (liste vide = tout retirer). */
+  /** Remplace les responsables de plusieurs tâches. Renvoie les assignations réellement ajoutées. */
   async replaceAssignees(
     companyId: string,
     taskIds: readonly string[],
     userIds: readonly string[],
-  ): Promise<void> {
+  ): Promise<Array<{ taskId: string; userId: string }>> {
     const manager = this.repo.manager;
     await manager.query(
       `DELETE FROM task_assignees ta
@@ -456,12 +456,14 @@ export class TaskRepository extends ArchivableTenantRepository<Task> {
           AND NOT (ta.user_id = ANY($3::uuid[]))`,
       [companyId, [...taskIds], [...userIds]],
     );
-    await manager.query(
+    const added: Array<{ task_id: string; user_id: string }> = await manager.query(
       `INSERT INTO task_assignees (task_id, user_id)
        SELECT t.id, u.id FROM unnest($1::uuid[]) AS t(id), unnest($2::uuid[]) AS u(id)
-       ON CONFLICT DO NOTHING`,
+       ON CONFLICT DO NOTHING
+       RETURNING task_id, user_id`,
       [[...taskIds], [...userIds]],
     );
+    return added.map((row) => ({ taskId: row.task_id, userId: row.user_id }));
   }
 
   /** Remplace les étiquettes de plusieurs tâches (liste vide = tout retirer). */
@@ -689,5 +691,16 @@ export class TaskRepository extends ArchivableTenantRepository<Task> {
       ]);
     }
     qb.leftJoin('task.project', 'inc_project').addSelect(['inc_project.id', 'inc_project.title']);
+  }
+
+  /** Identifiants des responsables d'une tâche de l'entreprise. */
+  async assigneeIds(companyId: string, taskId: string): Promise<string[]> {
+    const rows: Array<{ user_id: string }> = await this.repo.manager.query(
+      `SELECT ta.user_id
+         FROM task_assignees ta JOIN tasks t ON t.id = ta.task_id
+        WHERE t.company_id = $1 AND ta.task_id = $2`,
+      [companyId, taskId],
+    );
+    return rows.map((row) => row.user_id);
   }
 }

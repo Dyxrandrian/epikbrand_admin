@@ -6,7 +6,7 @@ import type { AccessTokenPayload } from './authenticated-user.js';
 
 @Injectable()
 export class AccessTokenService {
-  constructor(private readonly jwt: JwtService) {}
+  constructor(private readonly jwt: JwtService) { }
 
   sign(userId: string, companyId: string): Promise<string> {
     const payload: AccessTokenPayload = { sub: userId, cid: companyId };
@@ -32,6 +32,10 @@ export class AccessTokenService {
     if (typeof payload.sub !== 'string' || typeof payload.cid !== 'string') {
       throw new NotAuthenticatedException('Jeton invalide.');
     }
-    return { sub: payload.sub, cid: payload.cid };
+    return {
+      sub: payload.sub,
+      cid: payload.cid,
+      exp: typeof payload.exp === 'number' ? payload.exp : undefined,
+    };
   }
 }

@@ -29,6 +29,8 @@ import { diffChanges, snapshot } from '../audit/audit-changes.js';
 import { PROJECT_AUDIT_FIELDS } from '../audit/audit-fields.js';
 import { AuditService } from '../audit/audit.service.js';
 import { monthRange, todayIn, weekRange } from './project-dates.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { notificationTemplates } from '../notifications/notification-templates.js';
 
 const UPDATE_MAP = {
   client_id: 'clientId',
@@ -46,7 +48,8 @@ export class ProjectService {
     private readonly clients: ClientRepository,
     private readonly companies: CompanyRepository,
     private readonly audit: AuditService,
-  ) {}
+    private readonly notifications: NotificationService,
+  ) { }
 
   async list(viewer: AuthenticatedUser, query: ProjectListQueryDto) {
     const privileged = isManagerOrAdmin(viewer);
@@ -191,7 +194,7 @@ export class ProjectService {
   /**
    * Changement de statut. Passer à « livré » avec des tâches non terminées exige une
    * confirmation (409 CONFIRMATION_REQUIRED, puis renvoi avec ?confirm=true).
-   * Notification aux membres : à brancher avec le module Notifications.
+   * Les membres du projet sont notifiés (sauf l'auteur du changement).
    */
   async changeStatus(
     user: AuthenticatedUser,
@@ -199,10 +202,10 @@ export class ProjectService {
     dto: ChangeProjectStatusDto,
     confirm: boolean,
   ) {
-    const project = await this.dataSource.transaction(async (manager) => {
+    const result = await this.dataSource.transaction(async (manager) => {
       const repo = this.projects.withManager(manager);
       const before = await repo.getById(user.companyId, id);
-      if (before.status === dto.status) return before;
+      if (before.status === dto.status) return { project: before, memberIds: null as string[] | null };
 
       if (dto.status === ProjectStatus.DELIVERED && !confirm) {
         const stats = (await repo.taskStats(user.companyId, [id])).get(id) ?? emptyTaskStats();
@@ -233,9 +236,23 @@ export class ProjectService {
           manager,
         );
       }
-      return after;
+
+      const members = await repo.team(user.companyId, id);
+      return { project: after, memberIds: members.map((member) => member.id) };
     });
-    return this.present(user, project);
+
+    if (result.memberIds) {
+      await this.notifications.notify({
+        companyId: user.companyId,
+        recipientIds: result.memberIds,
+        actorId: user.id,
+        ...notificationTemplates.projectStatusChanged(
+          { id, title: result.project.title },
+          result.project.status,
+        ),
+      });
+    }
+    return this.present(user, result.project);
   }
 
   /** Idempotent : archiver un projet déjà archivé ne fait rien. */

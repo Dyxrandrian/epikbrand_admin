@@ -15,7 +15,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly accessTokens: AccessTokenService,
     @InjectRepository(User) private readonly users: Repository<User>,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -29,6 +29,8 @@ export class JwtAuthGuard implements CanActivate {
     if (!token) throw new NotAuthenticatedException();
 
     const payload = await this.accessTokens.verify(token);
+
+    request.tokenExpiresAt = payload.exp ? payload.exp * 1000 : undefined;
 
     // Relecture en base : désactivation et changement de rôle effectifs immédiatement
     const user = await this.users.findOne({

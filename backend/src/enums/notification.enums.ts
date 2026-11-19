@@ -1,0 +1,14 @@
+/** La colonne `type` est un varchar : cet enum vit seulement dans le code. */
+export enum NotificationType {
+  TASK_ASSIGNED = 'task_assigned',
+  TASK_STATUS_CHANGED = 'task_status_changed',
+  PROJECT_STATUS_CHANGED = 'project_status_changed',
+  TASK_MENTION = 'task_mention',
+  LEAVE_REQUEST_CREATED = 'leave_request_created',
+  LEAVE_REQUEST_DECIDED = 'leave_request_decided',
+  TRAINING_REQUEST_CREATED = 'training_request_created',
+  TRAINING_REQUEST_DECIDED = 'training_request_decided',
+  INVOICE_OVERDUE = 'invoice_overdue',
+  EXPENSE_DUE = 'expense_due',
+  ARTICLE_PUBLISHED = 'article_published',
+}

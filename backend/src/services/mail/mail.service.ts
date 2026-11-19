@@ -59,6 +59,21 @@ export class MailService {
     });
   }
 
+  async sendNotification(
+    to: string,
+    name: string,
+    title: string,
+    content: string,
+    redirectUrl: string | null,
+  ): Promise<void> {
+    const link = `${this.frontendUrl}${redirectUrl ?? ''}`;
+    await this.deliver({
+      to,
+      subject: title,
+      text: `Bonjour ${name},\n\n${content}\n\nOuvrir dans EpikBrand :\n${link}\n`,
+    });
+  }
+
   private link(path: string, token: string): string {
     return `${this.frontendUrl}${path}?token=${encodeURIComponent(token)}`;
   }

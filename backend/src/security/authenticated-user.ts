@@ -11,10 +11,14 @@ export interface AuthenticatedUser {
 
 export interface AuthenticatedRequest extends Request {
   user?: AuthenticatedUser;
+  /** Expiration du jeton d'accès utilisé (ms depuis 1970). */
+  tokenExpiresAt?: number;
 }
 
 /** Contenu du jeton d'accès : uniquement l'utilisateur et l'entreprise. */
 export interface AccessTokenPayload {
   sub: string;
   cid: string;
+  /** Posé par la signature (secondes depuis 1970), lu à la vérification. */
+  exp?: number;
 }

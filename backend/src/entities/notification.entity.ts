@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { User } from './user.entity.js';
 
+@Index('idx_notifications_user_created', { synchronize: false })
+@Index('idx_notifications_user_unread', { synchronize: false })
 @Entity('notifications')
 export class Notification {
   @PrimaryGeneratedColumn('uuid')

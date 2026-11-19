@@ -32,9 +32,18 @@ import {
   unique,
   viewerOf,
 } from './task-rules.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { notificationTemplates } from '../notifications/notification-templates.js';
 
 const MAX_CALENDAR_DAYS = 366;
 const COLLABORATOR_FIELDS = ['version', 'status', 'description'];
+
+/** Informations d'un changement de statut, recueillies dans la transaction. */
+interface StatusChange {
+  title: string;
+  to: TaskStatus;
+  assigneeIds: string[];
+}
 
 @Injectable()
 export class TaskService {
@@ -43,7 +52,8 @@ export class TaskService {
     private readonly tasks: TaskRepository,
     private readonly projects: ProjectRepository,
     private readonly companies: CompanyRepository,
-  ) {}
+    private readonly notifications: NotificationService,
+  ) { }
 
   // ---------- Lectures ----------
 
@@ -247,6 +257,13 @@ export class TaskService {
       return created.id;
     });
 
+    await this.notifications.notify({
+      companyId,
+      recipientIds: assigneeIds,
+      actorId: user.id,
+      ...notificationTemplates.taskAssigned({ id: newId, title: dto.title }),
+    });
+
     return this.view(user, newId);
   }
 
@@ -269,7 +286,7 @@ export class TaskService {
       }
     }
 
-    await this.dataSource.transaction(async (manager) => {
+    const statusChange = await this.dataSource.transaction(async (manager) => {
       const repo = this.tasks.withManager(manager);
       const before = await repo.getVisible(companyId, id, ctx);
       await this.assertCanEditAssigned(repo, viewer, ctx, id);
@@ -287,6 +304,7 @@ export class TaskService {
         if (dto.end_date !== undefined) changes.endDate = end;
       }
 
+      let change: StatusChange | null = null;
       if (dto.status !== undefined && dto.status !== before.status) {
         changes.status = dto.status;
         Object.assign(changes, completionChange(before.status, dto.status));
@@ -297,14 +315,21 @@ export class TaskService {
           before.parentTaskId,
           dto.status,
         );
+        change = {
+          title: dto.title ?? before.title,
+          to: dto.status,
+          assigneeIds: await repo.assigneeIds(companyId, id),
+        };
       }
 
-      if (Object.keys(changes).length === 0) return;
+      if (Object.keys(changes).length === 0) return null;
 
       // 409 VERSION_CONFLICT si la version envoyée n'est plus la bonne
       await repo.updateWithVersion(companyId, id, dto.version, changes as UpdateChanges<Task>);
+      return change;
     });
 
+    if (statusChange) await this.notifyStatusChange(viewer, id, statusChange);
     return this.view(viewer, id);
   }
 
@@ -313,7 +338,7 @@ export class TaskService {
     const ctx = viewerOf(viewer);
     const { companyId } = viewer;
 
-    await this.dataSource.transaction(async (manager) => {
+    const statusChange = await this.dataSource.transaction(async (manager) => {
       const repo = this.tasks.withManager(manager);
       const task = await repo.getVisible(companyId, id, ctx);
       await this.assertCanEditAssigned(repo, viewer, ctx, id);
@@ -324,8 +349,17 @@ export class TaskService {
         position,
         ...completionChange(task.status, dto.status),
       } as UpdateChanges<Task>);
+
+      if (task.status === dto.status) return null; // simple réordonnancement dans la colonne
+      const change: StatusChange = {
+        title: task.title,
+        to: dto.status,
+        assigneeIds: await repo.assigneeIds(companyId, id),
+      };
+      return change;
     });
 
+    if (statusChange) await this.notifyStatusChange(viewer, id, statusChange);
     return this.view(viewer, id);
   }
 
@@ -416,6 +450,20 @@ export class TaskService {
     if (parent.parentTaskId !== null) {
       throw new BusinessRuleException('Une sous-tâche ne peut pas avoir elle-même de sous-tâches.');
     }
+  }
+
+  /** Les responsables de la tâche sont prévenus (sauf l'auteur du changement). */
+  private notifyStatusChange(
+    actor: AuthenticatedUser,
+    taskId: string,
+    change: StatusChange,
+  ): Promise<void> {
+    return this.notifications.notify({
+      companyId: actor.companyId,
+      recipientIds: change.assigneeIds,
+      actorId: actor.id,
+      ...notificationTemplates.taskStatusChanged({ id: taskId, title: change.title }, change.to),
+    });
   }
 
   /** Un collaborateur ne modifie que les tâches qui lui sont assignées. */
