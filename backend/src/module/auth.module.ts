@@ -27,6 +27,6 @@ import { SecurityModule } from './security.module.js';
     SessionService,
     UserTokenService,
   ],
-  exports: [SessionService, UserTokenService],
+  exports: [SessionService, UserTokenService, InvitationService],
 })
 export class AuthModule {}

@@ -8,6 +8,9 @@ import { SecurityModule } from './module/security.module.js';
 import { AuthModule } from './module/auth.module.js';
 import { ProfileModule } from './module/profile.module.js';
 import { AuditModule } from './module/audit.module.js';
+import { CompanyModule } from './module/company.module.js';
+import { UsersModule } from './module/users.module.js';
+import { ConfigListsModule } from './module/config-lists.module.js';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { AuditModule } from './module/audit.module.js';
     AuthModule,
     ProfileModule,
     AuditModule,
+    CompanyModule,
+    UsersModule,
+    ConfigListsModule,
   ],
 })
 export class AppModule {}

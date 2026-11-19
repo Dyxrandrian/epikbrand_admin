@@ -8,3 +8,13 @@ export const normalizeEmail = ({ value }: TransformFnParams) =>
 
 export const trimToNull = ({ value }: TransformFnParams) =>
   typeof value === 'string' ? value.trim() || null : value;
+
+export const toBoolean = ({ value }: TransformFnParams) =>
+  value === 'true' ? true : value === 'false' ? false : value;
+
+/** Retire les espaces en début, en fin, et réduit les espaces multiples. */
+export const normalizeName = ({ value }: TransformFnParams) =>
+  typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value;
+
+export const upperCaseTrim = ({ value }: TransformFnParams) =>
+  typeof value === 'string' ? value.trim().toUpperCase() : value;

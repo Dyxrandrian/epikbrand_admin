@@ -23,4 +23,10 @@ export enum AuditEntityType {
   EXPENSE = 'expense',
   SALARY = 'salary',
   ARTICLE = 'article',
+  LEAVE_TYPE = 'leave_type',
+  ARTICLE_CATEGORY = 'article_category',
+  ARTICLE_SECTION = 'article_section',
+  STRUCTURE_ELEMENT_TYPE = 'structure_element_type',
+  EXPENSE_CATEGORY = 'expense_category',
+  LABEL = 'label',
 }
