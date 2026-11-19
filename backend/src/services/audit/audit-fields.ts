@@ -32,3 +32,11 @@ export const ARTICLE_SECTION_AUDIT_FIELDS = ['name', 'slug'] as const;
 export const STRUCTURE_ELEMENT_TYPE_AUDIT_FIELDS = ['name', 'slug'] as const;
 export const EXPENSE_CATEGORY_AUDIT_FIELDS = ['name', 'description'] as const;
 export const LABEL_AUDIT_FIELDS = ['name', 'color'] as const;
+
+export const CLIENT_AUDIT_FIELDS = [
+  'companyName',
+  'contactName',
+  'email',
+  'phone',
+  'address',
+] as const;

@@ -2,7 +2,10 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import type { Company } from './company.entity.js';
 import type { Client } from './client.entity.js';
 import type { User } from './user.entity.js';
+import { Index } from 'typeorm';
 
+@Index('idx_interactions_client_date', { synchronize: false })
+@Index('idx_interactions_company_date', { synchronize: false })
 @Entity('interactions')
 export class Interaction {
   @PrimaryGeneratedColumn('uuid')

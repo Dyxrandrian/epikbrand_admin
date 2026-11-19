@@ -32,4 +32,18 @@ export class ProjectRepository extends ArchivableTenantRepository<Project> {
     this.applyIncludes(qb, query.include, this.includable);
     return this.paginate(qb, query);
   }
+
+    /** Projets actifs d'un client (fiche client 360°), du plus récent au plus ancien. */
+  findByClient(companyId: string, clientId: string, limit: number): Promise<Project[]> {
+    return this.scoped(companyId)
+      .andWhere('project.clientId = :clientId', { clientId })
+      .orderBy('project.createdAt', 'DESC')
+      .addOrderBy('project.id', 'ASC')
+      .take(limit)
+      .getMany();
+  }
+
+  countByClient(companyId: string, clientId: string): Promise<number> {
+    return this.scoped(companyId).andWhere('project.clientId = :clientId', { clientId }).getCount();
+  }
 }

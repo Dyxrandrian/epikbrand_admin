@@ -13,8 +13,9 @@ export class AppException extends HttpException {
     message: string,
     status: HttpStatus,
     public readonly details?: ErrorDetail[],
+    public readonly meta?: Record<string, unknown>,
   ) {
-    super({ code, message, details }, status);
+    super({ code, message, details, meta }, status);
   }
 }
 
@@ -121,5 +122,12 @@ export class TooManyRequestsException extends AppException {
       `Trop de requêtes. Réessayez dans ${retryAfterSeconds} seconde(s).`,
       HttpStatus.TOO_MANY_REQUESTS,
     );
+  }
+}
+
+/** 409 contournable : un client similaire existe déjà (renvoyer la requête avec ?force=true). */
+export class PotentialDuplicateException extends AppException {
+  constructor(message: string, duplicates: unknown[]) {
+    super(ErrorCode.POSSIBLE_DUPLICATE, message, HttpStatus.CONFLICT, undefined, { duplicates });
   }
 }

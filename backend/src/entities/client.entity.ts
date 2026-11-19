@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, VersionColumn, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { Interaction } from './interaction.entity.js';
-
+@Index('idx_clients_company_name', { synchronize: false })
 @Index('idx_search_clients', { synchronize: false })
 @Entity('clients')
 export class Client {

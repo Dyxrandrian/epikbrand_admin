@@ -4,6 +4,7 @@ import type { UserToken } from './user-token.entity.js';
 import type { RefreshToken } from './refresh-token.entity.js';
 import { UserRole } from '../enums/app.enums.js';
 
+@Index('idx_search_users_full', { synchronize: false })
 @Index('idx_search_users', { synchronize: false })
 @Entity('users')
 export class User {

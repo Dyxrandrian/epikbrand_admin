@@ -91,3 +91,11 @@ export enum MediaPurpose {
   AVATAR = 'avatar',
   RECEIPT = 'receipt',
 }
+
+export enum InteractionType {
+  CALL = 'call',
+  EMAIL = 'email',
+  MEETING = 'meeting',
+  VISIT = 'visit',
+  OTHER = 'other',
+}

@@ -7,6 +7,7 @@ import { InvoiceDocumentType, InvoicePaymentStatus, PaymentMethod } from '../enu
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Check('chk_invoice_dates', '"due_date" IS NULL OR "due_date" >= "issue_date"')
+@Index('idx_invoices_client', { synchronize: false })
 @Index('idx_search_invoice_number', { synchronize: false })
 @Entity('invoices')
 @Unique(['companyId', 'invoiceNumber'])

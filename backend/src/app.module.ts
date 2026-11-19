@@ -11,6 +11,7 @@ import { AuditModule } from './module/audit.module.js';
 import { CompanyModule } from './module/company.module.js';
 import { UsersModule } from './module/users.module.js';
 import { ConfigListsModule } from './module/config-lists.module.js';
+import { CrmModule } from './module/crm.module.js';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigListsModule } from './module/config-lists.module.js';
     CompanyModule,
     UsersModule,
     ConfigListsModule,
+    CrmModule
   ],
 })
 export class AppModule {}

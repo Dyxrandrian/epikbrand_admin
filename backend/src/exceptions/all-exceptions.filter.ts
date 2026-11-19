@@ -11,6 +11,7 @@ interface NormalizedError {
   code: ErrorCode;
   message: string;
   details?: ErrorDetail[];
+  meta?: Record<string, unknown>;
 }
 
 const DEFAULTS: Record<number, { code: ErrorCode; message: string }> = {
@@ -63,6 +64,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: error.code,
         message: error.message,
         ...(error.details ? { details: error.details } : {}),
+        ...(error.meta ? { meta: error.meta } : {}),
       },
       path: request.originalUrl,
       timestamp: new Date().toISOString(),
@@ -77,6 +79,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: exception.code,
         message: exception.message,
         details: exception.details,
+        meta: exception.meta,
       };
     }
 

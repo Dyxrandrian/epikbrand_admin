@@ -5,6 +5,7 @@ import type { Task } from './task.entity.js';
 import { ProjectStatus } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
+@Index('idx_projects_client', { synchronize: false })
 @Index('idx_search_projects', { synchronize: false })
 @Entity('projects')
 export class Project {

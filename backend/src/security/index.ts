@@ -12,3 +12,4 @@ export * from './current-user.decorator.js';
 export * from './jwt-auth.guard.js';
 export * from './roles.guard.js';
 export * from './rate-limit/index.js';
+export * from './permissions.js';
