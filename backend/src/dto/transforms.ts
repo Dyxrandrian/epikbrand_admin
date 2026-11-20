@@ -22,3 +22,7 @@ export const upperCaseTrim = ({ value }: TransformFnParams) =>
 /** E-mail facultatif : en minuscules, une chaîne vide devient null. */
 export const normalizeOptionalEmail = ({ value }: TransformFnParams) =>
   typeof value === 'string' ? value.trim().toLowerCase() || null : value;
+
+/** Champ de formulaire laissé vide : traité comme absent. */
+export const emptyToUndefined = ({ value }: TransformFnParams) =>
+  value === '' ? undefined : value;

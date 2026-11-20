@@ -432,14 +432,17 @@ export class TaskRepository extends ArchivableTenantRepository<Task> {
   }
 
   async removeAssignee(companyId: string, taskId: string, userId: string): Promise<boolean> {
-    const rows: unknown[] = await this.repo.manager.query(
-      `DELETE FROM task_assignees ta
-        USING tasks t
-        WHERE ta.task_id = t.id AND t.company_id = $1 AND ta.task_id = $2 AND ta.user_id = $3
-        RETURNING ta.user_id`,
+    const rows: Array<{ n: number }> = await this.repo.manager.query(
+      `WITH removed AS (
+         DELETE FROM task_assignees ta
+          USING tasks t
+          WHERE ta.task_id = t.id AND t.company_id = $1 AND ta.task_id = $2 AND ta.user_id = $3
+          RETURNING ta.user_id
+       )
+       SELECT COUNT(*)::int AS n FROM removed`,
       [companyId, taskId, userId],
     );
-    return rows.length > 0;
+    return rows[0].n > 0;
   }
 
   /** Remplace les responsables de plusieurs tâches. Renvoie les assignations réellement ajoutées. */

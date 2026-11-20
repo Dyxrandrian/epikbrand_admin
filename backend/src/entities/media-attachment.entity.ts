@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { Task } from './task.entity.js';
 import type { Project } from './project.entity.js';
@@ -11,6 +11,11 @@ import { bigintTransformer } from '../transformers/numeric.transformer.js';
  * purpose = 'attachment' : exactement un parent (task, project ou article).
  * Autres purposes : aucun parent.
  */
+@Index('idx_media_company_created', { synchronize: false })
+@Index('idx_media_task', { synchronize: false })
+@Index('idx_media_project', { synchronize: false })
+@Index('idx_media_article', { synchronize: false })
+@Index('idx_media_uploader', { synchronize: false })
 @Check('chk_media_purpose', `"purpose" IN ('attachment', 'logo', 'cover', 'avatar', 'receipt')`)
 @Check('chk_media_parent', `("purpose" = 'attachment' AND num_nonnulls("task_id", "project_id", "article_id") = 1) OR ("purpose" <> 'attachment' AND num_nonnulls("task_id", "project_id", "article_id") = 0)`)
 @Entity('media_attachments')

@@ -182,7 +182,7 @@ export abstract class TenantRepository<T extends TenantEntity> {
     return safe as unknown as UpdateChanges<T>;
   }
 
-  private requireCompanyId(companyId: string): string {
+  protected requireCompanyId(companyId: string): string {
     if (typeof companyId !== 'string' || companyId.length === 0) {
       throw new Error(
         'companyId obligatoire : un repository multi-tenant ne peut pas être appelé sans entreprise.',

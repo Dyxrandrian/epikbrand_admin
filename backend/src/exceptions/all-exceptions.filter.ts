@@ -26,6 +26,10 @@ const DEFAULTS: Record<number, { code: ErrorCode; message: string }> = {
     code: ErrorCode.CONFLICT,
     message: "Conflit avec l'état actuel de la ressource.",
   },
+  413: {
+    code: ErrorCode.FILE_TOO_LARGE,
+    message: 'Le fichier est trop volumineux (25 Mo maximum).',
+  },
   422: {
     code: ErrorCode.BUSINESS_RULE_VIOLATION,
     message: 'Cette opération viole une règle métier.',

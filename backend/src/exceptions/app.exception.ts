@@ -74,8 +74,9 @@ export class BusinessRuleException extends AppException {
   constructor(
     message: string,
     code: ErrorCode = ErrorCode.BUSINESS_RULE_VIOLATION,
+    meta?: Record<string, unknown>,
   ) {
-    super(code, message, HttpStatus.UNPROCESSABLE_ENTITY);
+    super(code, message, HttpStatus.UNPROCESSABLE_ENTITY, undefined, meta);
   }
 }
 
@@ -137,5 +138,12 @@ export class PotentialDuplicateException extends AppException {
 export class ConfirmationRequiredException extends AppException {
   constructor(message: string, meta: Record<string, unknown>) {
     super(ErrorCode.CONFIRMATION_REQUIRED, message, HttpStatus.CONFLICT, undefined, meta);
+  }
+}
+
+/** 503 : un service nécessaire à l'opération est momentanément indisponible. */
+export class ServiceUnavailableAppException extends AppException {
+  constructor(message: string, code: ErrorCode) {
+    super(code, message, HttpStatus.SERVICE_UNAVAILABLE);
   }
 }

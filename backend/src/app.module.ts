@@ -15,6 +15,7 @@ import { CrmModule } from './module/crm.module.js';
 import { ProjectsModule } from './module/projects.module.js';
 import { TasksModule } from './module/tasks.module.js';
 import { NotificationsModule } from './module/notifications.module.js';
+import { FilesModule } from './module/files.module.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NotificationsModule } from './module/notifications.module.js';
     ProjectsModule,
     TasksModule,
     NotificationsModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

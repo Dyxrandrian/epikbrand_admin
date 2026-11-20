@@ -13,3 +13,4 @@ export * from './interaction.repository.js';
 export * from './task.repository.js';
 export * from './task-comment.repository.js';
 export * from './notification.repository.js';
+export * from './file.repository.js';
