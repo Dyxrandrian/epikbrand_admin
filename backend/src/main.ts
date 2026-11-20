@@ -31,7 +31,7 @@ async function bootstrap() {
   app.enableCors({
     origin: origins.length ? origins : false,
     credentials: true,
-    exposedHeaders: ['Retry-After'],
+    exposedHeaders: ['Retry-After', 'Idempotent-Replayed', 'Content-Disposition'],
   });
 
   app.useGlobalPipes(

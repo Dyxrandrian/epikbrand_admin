@@ -83,3 +83,11 @@ export const INVOICE_AUDIT_FIELDS = [
   'acceptedAt',
   'rejectedAt',
 ] as const;
+
+export const INVOICE_PAYMENT_AUDIT_FIELDS = [
+  'invoiceId',
+  'amount',
+  'paidAt',
+  'method',
+  'reference',
+] as const;

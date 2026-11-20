@@ -1,18 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-interface Mail {
-  to: string;
-  subject: string;
-  text: string;
-}
+import { MailTransport } from './mail-transport.js';
+import type { Mail, MailAttachment } from './mail-transport.js';
 
 @Injectable()
 export class MailService {
-  private readonly logger = new Logger(MailService.name);
   private readonly frontendUrl: string;
 
-  constructor(private readonly config: ConfigService) {
+  constructor(
+    private readonly config: ConfigService,
+    private readonly transport: MailTransport,
+  ) {
     this.frontendUrl = (
       this.config.get<string>('FRONTEND_URL') ?? 'http://localhost:5173'
     ).replace(/\/$/, '');
@@ -74,20 +72,21 @@ export class MailService {
     });
   }
 
+  /** Message libre avec pièce jointe (devis, facture, avoir). Lève une erreur si l'envoi échoue. */
+  async sendWithAttachment(
+    to: string,
+    subject: string,
+    text: string,
+    attachment: MailAttachment,
+  ): Promise<void> {
+    await this.deliver({ to, subject, text, attachments: [attachment] });
+  }
+
   private link(path: string, token: string): string {
     return `${this.frontendUrl}${path}?token=${encodeURIComponent(token)}`;
   }
 
-  /** À remplacer par un vrai fournisseur (SMTP, Resend…) plus tard. */
-  private async deliver(mail: Mail): Promise<void> {
-    if (this.config.get<string>('NODE_ENV') === 'production') {
-      this.logger.warn(
-        `Aucun fournisseur d'e-mail configuré : "${mail.subject}" pour ${mail.to} non envoyé.`,
-      );
-      return;
-    }
-    this.logger.log(
-      `\n--- E-MAIL (mode développement) ---\nÀ : ${mail.to}\nObjet : ${mail.subject}\n\n${mail.text}-----------------------------------`,
-    );
+  private deliver(mail: Mail): Promise<void> {
+    return this.transport.send(mail);
   }
 }

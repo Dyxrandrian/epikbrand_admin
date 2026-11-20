@@ -24,11 +24,12 @@ export const PUBLIC_PURPOSES: readonly MediaPurpose[] = [
 export const REPLACING_PURPOSES: readonly MediaPurpose[] = PUBLIC_PURPOSES;
 
 const PROFILE_IMAGES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+const LOGO_IMAGES = ['image/jpeg', 'image/png'] as const;
 
 /** Formats acceptés par usage ; absent = tous les formats autorisés. */
 export const ALLOWED_MIMES_BY_PURPOSE: Partial<Record<MediaPurpose, readonly string[]>> = {
   [MediaPurpose.AVATAR]: PROFILE_IMAGES,
-  [MediaPurpose.LOGO]: PROFILE_IMAGES,
+  [MediaPurpose.LOGO]: LOGO_IMAGES,
   [MediaPurpose.COVER]: PROFILE_IMAGES,
   [MediaPurpose.RECEIPT]: [...PROFILE_IMAGES, 'application/pdf'],
 };

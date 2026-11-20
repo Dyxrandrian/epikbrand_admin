@@ -36,3 +36,4 @@ export * from './user-preferences.entity.js';
 export * from './user-token.entity.js';
 export * from './user.entity.js';
 export * from './invoice-payment.entity.js';
+export * from './idempotency-key.entity.js';

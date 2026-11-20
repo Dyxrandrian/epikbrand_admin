@@ -234,4 +234,12 @@ export class FileRepository extends TenantRepository<MediaAttachment> {
       { accViewer: viewer.id },
     );
   }
+
+  /** Logo actuel de l'entreprise (le plus récent). */
+  findCompanyLogo(companyId: string): Promise<MediaAttachment | null> {
+    return this.scoped(companyId)
+      .andWhere('file.purpose = :logoPurpose', { logoPurpose: MediaPurpose.LOGO })
+      .orderBy('file.createdAt', 'DESC')
+      .getOne();
+  }
 }

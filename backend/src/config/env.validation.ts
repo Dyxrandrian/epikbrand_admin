@@ -8,6 +8,7 @@ const REQUIRED = [
 ];
 
 const R2_REQUIRED = ['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET'];
+const SMTP_REQUIRED = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
 
 export function validateEnv(env: Record<string, unknown>) {
   const missing = REQUIRED.filter((key) => !env[key]);
@@ -28,6 +29,17 @@ export function validateEnv(env: Record<string, unknown>) {
     const missingR2 = R2_REQUIRED.filter((key) => !env[key]);
     if (missingR2.length > 0) {
       throw new Error(`STORAGE_DRIVER=r2 exige : ${missingR2.join(', ')}`);
+    }
+  }
+
+  const mailDriver = String(env.MAIL_DRIVER ?? 'console');
+  if (mailDriver !== 'console' && mailDriver !== 'smtp') {
+    throw new Error('MAIL_DRIVER doit valoir « console » ou « smtp ».');
+  }
+  if (mailDriver === 'smtp') {
+    const missingSmtp = SMTP_REQUIRED.filter((key) => !env[key]);
+    if (missingSmtp.length > 0) {
+      throw new Error(`MAIL_DRIVER=smtp exige : ${missingSmtp.join(', ')}`);
     }
   }
 

@@ -17,6 +17,7 @@ export enum AuditAction {
   QUOTE_DECIDED = 'quote_decided',
   PAYMENT_RECORDED = 'payment_recorded',
   PAYMENT_DELETED = 'payment_deleted',
+  SEND = 'send',
 }
 
 export enum AuditEntityType {
@@ -36,4 +37,5 @@ export enum AuditEntityType {
   EXPENSE_CATEGORY = 'expense_category',
   LABEL = 'label',
   INVOICE_PAYMENT = 'invoice_payment',
+  
 }

@@ -9,6 +9,7 @@ import { UserRole } from '../../enums/app.enums.js';
 import { CurrentUser, RateLimit, Roles } from '../../security/index.js';
 import type { AuthenticatedUser } from '../../security/index.js';
 import { InvoiceService } from '../../services/invoices/invoice.service.js';
+import { Idempotent } from '../../interceptors/idempotent.decorator.js';
 
 // Facturation : admin et manager. Un collaborateur n'a accès à rien pour l'instant.
 @Roles(UserRole.ADMIN, UserRole.MANAGER)
@@ -21,6 +22,7 @@ export class InvoicesController {
     return this.invoices.list(user, query);
   }
 
+  @Idempotent()
   @RateLimit({ limit: 120, windowSeconds: 60, scope: 'user' })
   @Post()
   create(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateInvoiceDto) {

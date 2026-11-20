@@ -258,4 +258,13 @@ export class InvoiceRepository extends VersionedTenantRepository<Invoice> {
       balance_due: Number(row.balance_due),
     }));
   }
+
+  /** Documents qui pointent vers celui-ci : avoirs d'une facture, facture issue d'un devis. */
+  derivedFrom(companyId: string, sourceId: string): Promise<Invoice[]> {
+    return this.scoped(companyId)
+      .andWhere('invoice.sourceDocumentId = :derivedSource', { derivedSource: sourceId })
+      .orderBy('invoice.createdAt', 'ASC')
+      .addOrderBy('invoice.id', 'ASC')
+      .getMany();
+  }
 }

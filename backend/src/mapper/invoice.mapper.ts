@@ -7,6 +7,7 @@ import {
   isOverdue,
   refundDue,
 } from '../services/invoices/invoice-rules.js';
+import type { InvoicePayment } from '../entities/invoice-payment.entity.js';
 
 export function toInvoiceItem(item: InvoiceItem) {
   return {
@@ -102,3 +103,39 @@ export function toInvoiceDetail(invoice: Invoice, ctx: InvoiceDetailContext) {
       : null,
   };
 }
+
+/** `creator` n'apparaît que si la relation a été chargée (null si l'auteur a été supprimé). */
+export function toInvoicePayment(payment: InvoicePayment) {
+  return {
+    id: payment.id,
+    invoice_id: payment.invoiceId,
+    amount: payment.amount,
+    paid_at: payment.paidAt,
+    method: payment.method,
+    reference: payment.reference,
+    notes: payment.notes,
+    created_by: payment.createdById,
+    ...(payment.createdBy !== undefined
+      ? {
+          creator: payment.createdBy
+            ? { id: payment.createdBy.id, name: payment.createdBy.name }
+            : null,
+        }
+      : {}),
+    created_at: payment.createdAt,
+  };
+}
+
+export function toLinkedDocument(doc: Invoice) {
+  return {
+    id: doc.id,
+    type: doc.type,
+    status: doc.status,
+    invoice_number: doc.invoiceNumber,
+    issue_date: doc.issueDate,
+    total_ttc: doc.totalTtc,
+    currency: doc.currency,
+  };
+}
+
+export type InvoiceDetail = ReturnType<typeof toInvoiceDetail>;

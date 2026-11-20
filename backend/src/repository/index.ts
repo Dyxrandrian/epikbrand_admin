@@ -15,3 +15,4 @@ export * from './task-comment.repository.js';
 export * from './notification.repository.js';
 export * from './file.repository.js';
 export * from './invoice.repository.js';
+export * from './invoice-payment.repository.js';

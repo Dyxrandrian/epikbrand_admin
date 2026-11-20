@@ -143,7 +143,7 @@ export class ConfirmationRequiredException extends AppException {
 
 /** 503 : un service nécessaire à l'opération est momentanément indisponible. */
 export class ServiceUnavailableAppException extends AppException {
-  constructor(message: string, code: ErrorCode) {
-    super(code, message, HttpStatus.SERVICE_UNAVAILABLE);
+  constructor(message: string, code: ErrorCode, meta?: Record<string, unknown>) {
+    super(code, message, HttpStatus.SERVICE_UNAVAILABLE, undefined, meta);
   }
 }

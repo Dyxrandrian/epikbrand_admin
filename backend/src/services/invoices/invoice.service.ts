@@ -405,12 +405,12 @@ export class InvoiceService {
 
   // ---------- Outils internes ----------
 
-  private async context(companyId: string) {
+  async context(companyId: string) {
     const company = await this.companies.getById(companyId);
     return { company, today: todayIn(company.timezone) };
   }
 
-  private async detail(companyId: string, id: string) {
+  async detail(companyId: string, id: string) {
     const { company, today } = await this.context(companyId);
     const invoice = await this.invoices.getDetailed(companyId, id);
 
