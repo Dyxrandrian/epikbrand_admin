@@ -89,6 +89,8 @@ export class UserRepository extends TenantRepository<User> {
          OR EXISTS (SELECT 1 FROM agency_articles WHERE company_id = $1 AND updated_by = $2)
          OR EXISTS (SELECT 1 FROM agency_article_versions WHERE edited_by = $2)
          OR EXISTS (SELECT 1 FROM audit_logs WHERE company_id = $1 AND user_id = $2)
+         OR EXISTS (SELECT 1 FROM expenses WHERE company_id = $1 AND validated_by = $2)
+         OR EXISTS (SELECT 1 FROM invoice_payments WHERE company_id = $1 AND created_by = $2)
        ) AS linked`,
       [companyId, userId],
     );

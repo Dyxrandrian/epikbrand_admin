@@ -3,6 +3,19 @@ import { NotificationType } from '../../enums/notification.enums.js';
 
 // Chemins du frontend : à adapter à vos routes
 export const taskLink = (id: string): string => `/tasks/${id}`;
+export const expenseLink = (id: string): string => `/expenses/${id}`;
+
+const EXPENSE_DECISION_TITLES = {
+  validated: 'Dépense validée',
+  paid: 'Dépense payée',
+  cancelled: 'Dépense annulée',
+} as const;
+
+const EXPENSE_DECISION_VERBS = {
+  validated: 'a été validée',
+  paid: 'a été payée',
+  cancelled: 'a été annulée',
+} as const;
 export const projectLink = (id: string): string => `/projects/${id}`;
 export const MY_TASKS_LINK = '/tasks/mine';
 
@@ -55,5 +68,22 @@ export const notificationTemplates = {
     title: 'Vous avez été mentionné',
     content: `${authorName} vous a mentionné dans un commentaire sur la tâche ${quote(task.title)}.`,
     redirectUrl: taskLink(task.id),
+  }),
+
+  expenseSubmitted: (expense: { id: string; title: string }, authorName: string) => ({
+    type: NotificationType.EXPENSE_SUBMITTED,
+    title: 'Note de frais à valider',
+    content: `${authorName} a soumis la dépense ${quote(expense.title)}.`,
+    redirectUrl: expenseLink(expense.id),
+  }),
+
+  expenseDecided: (
+    expense: { id: string; title: string },
+    decision: 'validated' | 'paid' | 'cancelled',
+  ) => ({
+    type: NotificationType.EXPENSE_DECIDED,
+    title: EXPENSE_DECISION_TITLES[decision],
+    content: `Votre dépense ${quote(expense.title)} ${EXPENSE_DECISION_VERBS[decision]}.`,
+    redirectUrl: expenseLink(expense.id),
   }),
 };

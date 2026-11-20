@@ -18,6 +18,7 @@ import { NotificationsModule } from './module/notifications.module.js';
 import { FilesModule } from './module/files.module.js';
 import { InvoicesModule } from './module/invoices.module.js';
 import { IdempotencyModule } from './module/idempotency.module.js';
+import { ExpensesModule } from './module/expenses.module.js';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { IdempotencyModule } from './module/idempotency.module.js';
     FilesModule,
     InvoicesModule,
     IdempotencyModule,
+    ExpensesModule,
   ],
 })
 export class AppModule {}

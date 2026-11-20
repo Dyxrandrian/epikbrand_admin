@@ -9,6 +9,20 @@ import { numericTransformer } from '../transformers/numeric.transformer.js';
 
 @Check('chk_expense_amounts', '"amount_ttc" = "amount_ht" + "vat_amount"')
 @Check('chk_expense_recurrence', '"is_recurring" = false OR "recurrence" IS NOT NULL')
+@Check('chk_expense_nonnegative', '"amount_ht" >= 0 AND "vat_amount" >= 0')
+@Check('chk_expense_due_date', '"due_date" IS NULL OR "due_date" >= "expense_date"')
+@Check('chk_expense_payment', `("status" = 'paid' AND "paid_at" IS NOT NULL AND "payment_method" IS NOT NULL) OR ("status" <> 'paid' AND "paid_at" IS NULL AND "payment_method" IS NULL)`)
+@Check('chk_expense_recurrence_value', '"is_recurring" = true OR "recurrence" IS NULL')
+@Check('chk_expense_child_not_model', '"parent_expense_id" IS NULL OR "is_recurring" = false')
+@Index('idx_expenses_company_date', { synchronize: false })
+@Index('idx_expenses_company_status', { synchronize: false })
+@Index('idx_expenses_due_open', { synchronize: false })
+@Index('idx_expenses_project', { synchronize: false })
+@Index('idx_expenses_category', { synchronize: false })
+@Index('idx_expenses_user', { synchronize: false })
+@Index('idx_expenses_parent', { synchronize: false })
+@Index('idx_expenses_recurring', { synchronize: false })
+@Index('uq_expenses_receipt', { synchronize: false })
 @Index('idx_search_expenses', { synchronize: false })
 @Entity('expenses')
 export class Expense {
@@ -72,6 +86,13 @@ export class Expense {
   @Column({ name: 'receipt_url', type: 'varchar', length: 255, nullable: true })
   receiptUrl: string | null;
 
+  /** Validation d'une note de frais : NULL tant qu'elle n'a pas été validée */
+  @Column({ name: 'validated_by', type: 'uuid', nullable: true })
+  validatedById: string | null;
+
+  @Column({ name: 'validated_at', type: 'timestamptz', nullable: true })
+  validatedAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
@@ -93,6 +114,10 @@ export class Expense {
   @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   user: User | null;
+
+  @ManyToOne('User', { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'validated_by' })
+  validatedBy: User | null;
 
   @ManyToOne('Expense', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_expense_id' })

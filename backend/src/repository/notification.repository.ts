@@ -146,6 +146,17 @@ export class NotificationRepository extends TenantRepository<Notification> {
       throw new Error('companyId obligatoire : les notifications sont cloisonnées par entreprise.');
     }
   }
+
+  /** Administrateurs et managers actifs de l'entreprise. */
+  async managerIds(companyId: string): Promise<string[]> {
+    this.assertCompany(companyId);
+    const rows: Array<{ id: string }> = await this.repo.manager.query(
+      `SELECT id FROM users
+        WHERE company_id = $1 AND is_active = true AND role IN ('admin', 'manager')`,
+      [companyId],
+    );
+    return rows.map((row) => row.id);
+  }
 }
 
 /** Préférences : table personnelle, filtrée sur user_id (tiré du jeton). */
@@ -153,7 +164,7 @@ export class NotificationRepository extends TenantRepository<Notification> {
 export class NotificationPreferencesRepository {
   constructor(
     @InjectRepository(UserPreferences) private readonly repo: Repository<UserPreferences>,
-  ) {}
+  ) { }
 
   async get(userId: string): Promise<Record<string, unknown>> {
     const rows: Array<{ notification_prefs: Record<string, unknown> }> =

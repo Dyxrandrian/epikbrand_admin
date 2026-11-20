@@ -11,4 +11,6 @@ export enum NotificationType {
   INVOICE_OVERDUE = 'invoice_overdue',
   EXPENSE_DUE = 'expense_due',
   ARTICLE_PUBLISHED = 'article_published',
+  EXPENSE_SUBMITTED = 'expense_submitted',
+  EXPENSE_DECIDED = 'expense_decided',
 }

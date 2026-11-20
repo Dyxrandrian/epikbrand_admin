@@ -1,7 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Check, Unique } from 'typeorm';
 import type { Expense } from './expense.entity.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
+@Check('chk_expense_item_quantity', '"quantity" > 0')
+@Check('chk_expense_item_price', '"unit_price" >= 0')
+@Check('chk_expense_item_position', '"position" >= 0')
+@Unique('uq_expense_item_position', ['expenseId', 'position'])
 @Entity('expense_items')
 export class ExpenseItem {
   @PrimaryGeneratedColumn('uuid')
@@ -9,6 +13,9 @@ export class ExpenseItem {
 
   @Column({ name: 'expense_id', type: 'uuid' })
   expenseId: string;
+
+  @Column({ type: 'int', default: 0 })
+  position: number;
 
   @Column({ type: 'text' })
   description: string;

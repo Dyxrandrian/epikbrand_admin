@@ -91,3 +91,25 @@ export const INVOICE_PAYMENT_AUDIT_FIELDS = [
   'method',
   'reference',
 ] as const;
+
+export const EXPENSE_AUDIT_FIELDS = [
+  'title',
+  'supplierName',
+  'categoryId',
+  'projectId',
+  'userId',
+  'amountHt',
+  'vatAmount',
+  'amountTtc',
+  'status',
+  'isRecurring',
+  'recurrence',
+  'parentExpenseId',
+  'expenseDate',
+  'dueDate',
+  'paidAt',
+  'paymentMethod',
+  'receiptUrl',
+  'validatedAt',
+  'validatedById',
+] as const;

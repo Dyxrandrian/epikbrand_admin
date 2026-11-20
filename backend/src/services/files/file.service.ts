@@ -15,6 +15,7 @@ import {
   ErrorCode,
   ResourceNotFoundException,
   ValidationFailedException,
+  ConflictAppException,
 } from '../../exceptions/index.js';
 import { toFile } from '../../mapper/file.mapper.js';
 import { CompanyRepository } from '../../repository/company.repository.js';
@@ -25,12 +26,13 @@ import { AuditService } from '../audit/audit.service.js';
 import { viewerOf } from '../tasks/task-rules.js';
 import { FileAccessService } from './file-access.service.js';
 import { FileLinkService } from './file-link.service.js';
-import { publicFilePath, sharedFilePath } from './file-paths.js';
+import { publicFilePath, sharedFilePath, privateFilePath } from './file-paths.js';
 import { inspectUpload } from './file-inspection.js';
 import { PUBLIC_PURPOSES, REPLACING_PURPOSES } from './file-types.js';
 import { VirusScanner } from './scan/virus-scanner.js';
 import { FileStorage, StorageObjectNotFoundError, newStorageKey } from './storage/file-storage.js';
 import type { UploadedTempFile } from './uploaded-file.js';
+
 
 export interface OpenedFile {
   file: MediaAttachment;
@@ -58,7 +60,7 @@ export class FileService {
     private readonly links: FileLinkService,
     private readonly companies: CompanyRepository,
     private readonly audit: AuditService,
-  ) {}
+  ) { }
 
   // ---------- Envoi ----------
 
@@ -224,6 +226,17 @@ export class FileService {
     const file = await this.files.getById(companyId, id);
     await this.access.assertCanRead(viewer, file); // 404 si invisible
     this.assertCanDelete(viewer, file); // 403
+
+    // Un justificatif rattaché à une dépense se retire depuis la dépense (droits et statut vérifiés là-bas)
+    if (
+      file.purpose === MediaPurpose.RECEIPT &&
+      (await this.files.expenseOfReceipt(companyId, privateFilePath(file.id)))
+    ) {
+      throw new ConflictAppException(
+        'Ce justificatif est rattaché à une dépense : retirez-le depuis la dépense (DELETE /expenses/:id/receipt).',
+        ErrorCode.INVALID_STATE,
+      );
+    }
 
     await this.dataSource.transaction(async (manager) => {
       const repo = this.files.withManager(manager);

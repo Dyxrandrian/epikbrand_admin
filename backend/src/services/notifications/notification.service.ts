@@ -44,7 +44,7 @@ export class NotificationService {
     private readonly preferences: NotificationPreferencesRepository,
     private readonly hub: NotificationHub,
     private readonly mail: MailService,
-  ) {}
+  ) { }
 
   // ---------- Génération (appelée par les autres services, jamais par une route) ----------
 
@@ -55,6 +55,16 @@ export class NotificationService {
   async notify(input: NotifyInput): Promise<void> {
     try {
       await this.deliver(input);
+    } catch (error) {
+      this.logger.error(`Échec d'envoi de notification (${input.type})`, error as Error);
+    }
+  }
+
+  /** Comme notify, pour tous les administrateurs et managers actifs de l'entreprise. */
+  async notifyManagers(input: Omit<NotifyInput, 'recipientIds'>): Promise<void> {
+    try {
+      const recipientIds = await this.notifications.managerIds(input.companyId);
+      await this.deliver({ ...input, recipientIds });
     } catch (error) {
       this.logger.error(`Échec d'envoi de notification (${input.type})`, error as Error);
     }

@@ -242,4 +242,20 @@ export class FileRepository extends TenantRepository<MediaAttachment> {
       .orderBy('file.createdAt', 'DESC')
       .getOne();
   }
+
+  /** Dépense à laquelle ce justificatif est rattaché (par son URL), le cas échéant. */
+  async expenseOfReceipt(
+    companyId: string,
+    url: string,
+  ): Promise<{ id: string; status: string; userId: string | null } | null> {
+    const rows: Array<{ id: string; status: string; userId: string | null }> =
+      await this.repo.manager.query(
+        `SELECT id, status, user_id AS "userId"
+           FROM expenses
+          WHERE company_id = $1 AND receipt_url = $2
+          LIMIT 1`,
+        [this.requireCompanyId(companyId), url],
+      );
+    return rows[0] ?? null;
+  }
 }

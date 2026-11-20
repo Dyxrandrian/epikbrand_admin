@@ -15,6 +15,7 @@ import { ProjectRepository } from '../../repository/project.repository.js';
 import { TaskRepository } from '../../repository/task.repository.js';
 import type { AuthenticatedUser } from '../../security/index.js';
 import { viewerOf } from '../tasks/task-rules.js';
+import { privateFilePath } from './file-paths.js';
 
 export interface UploadParent {
   taskId?: string;
@@ -34,7 +35,7 @@ export class FileAccessService {
     private readonly files: FileRepository,
     private readonly tasks: TaskRepository,
     private readonly projects: ProjectRepository,
-  ) {}
+  ) { }
 
   /** 404 « Fichier introuvable » si l'utilisateur ne peut pas lire ce fichier. */
   async assertCanRead(viewer: AuthenticatedUser, file: MediaAttachment): Promise<void> {
@@ -50,8 +51,14 @@ export class FileAccessService {
         if (file.projectId) return this.parentReadable(viewer, 'project', file.projectId);
         if (file.articleId) return this.parentReadable(viewer, 'article', file.articleId);
         return false;
-      case MediaPurpose.RECEIPT:
-        return privileged || file.uploadedById === viewer.id;
+      case MediaPurpose.RECEIPT: {
+        if (privileged || file.uploadedById === viewer.id) return true;
+        const expense = await this.files.expenseOfReceipt(
+          viewer.companyId,
+          privateFilePath(file.id),
+        );
+        return expense?.userId === viewer.id;
+      }
       default:
         return true; // logo, couverture, avatar : membres de l'entreprise (déjà filtrés par entreprise)
     }
