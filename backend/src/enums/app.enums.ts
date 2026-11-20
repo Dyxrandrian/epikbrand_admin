@@ -99,3 +99,9 @@ export enum InteractionType {
   VISIT = 'visit',
   OTHER = 'other',
 }
+
+/** Colonnes VARCHAR + CHECK (pas un type ENUM PostgreSQL) */
+export enum DiscountType {
+  PERCENT = 'percent',
+  AMOUNT = 'amount',
+}

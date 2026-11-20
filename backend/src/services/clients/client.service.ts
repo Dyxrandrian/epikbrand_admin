@@ -36,6 +36,8 @@ const UPDATE_MAP = {
   email: 'email',
   phone: 'phone',
   address: 'address',
+  nif: 'nif',
+  stat: 'stat',
 } as const;
 
 const SHEET_PROJECTS_LIMIT = 50;
@@ -49,7 +51,7 @@ export class ClientService {
     private readonly projects: ProjectRepository,
     private readonly interactions: InteractionRepository,
     private readonly audit: AuditService,
-  ) {}
+  ) { }
 
   async list(viewer: AuthenticatedUser, query: ClientListQueryDto) {
     const archived = query.archived ?? 'exclude';
@@ -122,6 +124,8 @@ export class ClientService {
         email: dto.email ?? null,
         phone: dto.phone ?? null,
         address: dto.address ?? null,
+        nif: dto.nif ?? null, 
+        stat: dto.stat ?? null,
       });
       const client = await repo.getById(user.companyId, created.id);
 

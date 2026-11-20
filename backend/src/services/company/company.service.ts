@@ -18,6 +18,7 @@ import {
   COMPANY_SETTINGS_AUDIT_FIELDS,
 } from '../audit/audit-fields.js';
 import { AuditService } from '../audit/audit.service.js';
+import { isManagerOrAdmin } from '../../security/index.js';
 
 const PROFILE_MAP = {
   name: 'name',
@@ -29,6 +30,12 @@ const PROFILE_MAP = {
   nif: 'nif',
   stat: 'stat',
   rcs: 'rcs',
+  bank_name: 'bankName',
+  bank_account_holder: 'bankAccountHolder',
+  bank_account_number: 'bankAccountNumber',
+  bank_swift: 'bankSwift',
+  mobile_money_details: 'mobileMoneyDetails',
+  invoice_footer: 'invoiceFooter',
 } as const;
 
 const SETTINGS_MAP = {
@@ -43,10 +50,13 @@ export class CompanyService {
     private readonly dataSource: DataSource,
     private readonly companies: CompanyRepository,
     private readonly audit: AuditService,
-  ) {}
+  ) { }
 
-  async getProfile(companyId: string) {
-    return toCompanyProfile(await this.companies.getById(companyId));
+  async getProfile(viewer: AuthenticatedUser) {
+    return toCompanyProfile(
+      await this.companies.getById(viewer.companyId),
+      isManagerOrAdmin(viewer),
+    );
   }
 
   async getSettings(companyId: string) {
@@ -58,7 +68,7 @@ export class CompanyService {
       admin,
       mapDto(dto, PROFILE_MAP),
       COMPANY_AUDIT_FIELDS,
-      toCompanyProfile,
+      (company) => toCompanyProfile(company, true),
     );
   }
 

@@ -65,6 +65,41 @@ export class UpdateCompanyDto {
 
   @IsOptional()
   @Transform(trimToNull)
+  @IsString({ message: 'Le nom de la banque doit être un texte.' })
+  @MaxLength(100, { message: 'Le nom de la banque ne peut pas dépasser 100 caractères.' })
+  bank_name?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
+  @IsString({ message: 'Le titulaire du compte doit être un texte.' })
+  @MaxLength(100, { message: 'Le titulaire du compte ne peut pas dépasser 100 caractères.' })
+  bank_account_holder?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
+  @IsString({ message: 'Le numéro de compte doit être un texte.' })
+  @MaxLength(50, { message: 'Le numéro de compte ne peut pas dépasser 50 caractères.' })
+  bank_account_number?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
+  @Matches(/^[A-Za-z0-9]{8}([A-Za-z0-9]{3})?$/, { message: 'Le code SWIFT/BIC est invalide (8 ou 11 caractères).' })
+  bank_swift?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
+  @IsString({ message: 'Les informations mobile money doivent être un texte.' })
+  @MaxLength(500, { message: 'Les informations mobile money ne peuvent pas dépasser 500 caractères.' })
+  mobile_money_details?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
+  @IsString({ message: 'Le pied de page doit être un texte.' })
+  @MaxLength(1000, { message: 'Le pied de page ne peut pas dépasser 1000 caractères.' })
+  invoice_footer?: string | null;
+
+  @IsOptional()
+  @Transform(trimToNull)
   @IsString({ message: 'Le RCS doit être un texte.' })
   @MaxLength(50, { message: 'Le RCS ne peut pas dépasser 50 caractères.' })
   rcs?: string | null;

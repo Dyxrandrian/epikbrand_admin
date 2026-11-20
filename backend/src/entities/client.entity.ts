@@ -44,6 +44,12 @@ export class Client {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  nif: string | null;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  stat: string | null;
+
   @OneToMany('Interaction', (interaction: any) => interaction.client)
   interactions: Interaction[];
 }

@@ -26,3 +26,9 @@ export const normalizeOptionalEmail = ({ value }: TransformFnParams) =>
 /** Champ de formulaire laissé vide : traité comme absent. */
 export const emptyToUndefined = ({ value }: TransformFnParams) =>
   value === '' ? undefined : value;
+
+/** "a, b" devient ["a", "b"] (filtres multi-valeurs dans l'URL). */
+export const splitCsv = ({ value }: TransformFnParams) =>
+  typeof value === 'string'
+    ? value.split(',').map((part) => part.trim()).filter(Boolean)
+    : value;

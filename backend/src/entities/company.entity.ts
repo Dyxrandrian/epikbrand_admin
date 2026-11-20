@@ -58,6 +58,26 @@ export class Company {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
+  @Column({ name: 'bank_name', type: 'varchar', length: 100, nullable: true })
+  bankName: string | null;
+
+  @Column({ name: 'bank_account_holder', type: 'varchar', length: 100, nullable: true })
+  bankAccountHolder: string | null;
+
+  /** RIB ou IBAN */
+  @Column({ name: 'bank_account_number', type: 'varchar', length: 50, nullable: true })
+  bankAccountNumber: string | null;
+
+  @Column({ name: 'bank_swift', type: 'varchar', length: 11, nullable: true })
+  bankSwift: string | null;
+
+  /** MVola, Orange Money, Airtel Money… (texte libre, imprimé sur les documents) */
+  @Column({ name: 'mobile_money_details', type: 'text', nullable: true })
+  mobileMoneyDetails: string | null;
+
+  @Column({ name: 'invoice_footer', type: 'text', nullable: true })
+  invoiceFooter: string | null;
+
   @OneToMany('User', (user: any) => user.company)
   users: User[];
 }

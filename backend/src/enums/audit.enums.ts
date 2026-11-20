@@ -11,6 +11,12 @@ export enum AuditAction {
   PASSWORD_CHANGED = 'password_changed',
   PASSWORD_RESET = 'password_reset',
   INVITATION_ACCEPTED = 'invitation_accepted',
+  ISSUE = 'issue',
+  CANCEL = 'cancel',
+  CONVERT = 'convert',
+  QUOTE_DECIDED = 'quote_decided',
+  PAYMENT_RECORDED = 'payment_recorded',
+  PAYMENT_DELETED = 'payment_deleted',
 }
 
 export enum AuditEntityType {
@@ -29,4 +35,5 @@ export enum AuditEntityType {
   STRUCTURE_ELEMENT_TYPE = 'structure_element_type',
   EXPENSE_CATEGORY = 'expense_category',
   LABEL = 'label',
+  INVOICE_PAYMENT = 'invoice_payment',
 }

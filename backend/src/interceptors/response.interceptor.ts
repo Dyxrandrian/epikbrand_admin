@@ -23,6 +23,7 @@ export class ResponseInterceptor implements NestInterceptor {
               page: value.page,
               per_page: value.perPage,
               total_pages: value.totalPages,
+              ...value.extra,
             },
           };
         }

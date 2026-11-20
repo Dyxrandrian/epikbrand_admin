@@ -18,6 +18,11 @@ export const COMPANY_AUDIT_FIELDS = [
   'nif',
   'stat',
   'rcs',
+  'bankName', 
+  'bankAccountHolder', 
+  'bankAccountNumber', 
+  'bankSwift', 
+  'mobileMoneyDetails'
 ] as const;
 
 export const COMPANY_SETTINGS_AUDIT_FIELDS = [
@@ -39,6 +44,8 @@ export const CLIENT_AUDIT_FIELDS = [
   'email',
   'phone',
   'address',
+  'nif',
+  'stat',
 ] as const;
 
 export const PROJECT_AUDIT_FIELDS = [
@@ -47,4 +54,32 @@ export const PROJECT_AUDIT_FIELDS = [
   'budgetHt',
   'status',
   'deadline',
+] as const;
+
+export const INVOICE_AUDIT_FIELDS = [
+  'type',
+  'status',
+  'invoiceNumber',
+  'clientId',
+  'projectId',
+  'sourceDocumentId',
+  'issueDate',
+  'dueDate',
+  'validUntil',
+  'currency',
+  'vatRate',
+  'discountType',
+  'discountValue',
+  'subtotalHt',
+  'discountAmount',
+  'totalHt',
+  'totalVat',
+  'totalTtc',
+  'amountPaid',
+  'creditedTotal',
+  'sentAt',
+  'paidAt',
+  'paymentMethod',
+  'acceptedAt',
+  'rejectedAt',
 ] as const;

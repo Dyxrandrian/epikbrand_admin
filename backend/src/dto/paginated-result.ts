@@ -6,15 +6,23 @@ export class PaginatedResult<T> {
     public readonly total: number,
     public readonly page: number,
     public readonly perPage: number,
+    /** Informations supplémentaires placées dans `meta` (ex. totaux agrégés). */
+    public readonly extra: Record<string, unknown> = {},
   ) {}
 
   get totalPages(): number {
     return Math.ceil(this.total / this.perPage);
   }
 
-  /** Transforme les éléments (ex. entité -> DTO de sortie) en gardant la pagination. */
+  /** Transforme les éléments (ex. entité vers DTO de sortie) en gardant la pagination. */
   map<U>(fn: (item: T) => U): PaginatedResult<U> {
-    return new PaginatedResult(this.items.map(fn), this.total, this.page, this.perPage);
+    return new PaginatedResult(
+      this.items.map(fn),
+      this.total,
+      this.page,
+      this.perPage,
+      this.extra,
+    );
   }
 }
 

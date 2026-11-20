@@ -1,7 +1,7 @@
 import type { Company } from '../entities/company.entity.js';
 import type { CompanyUsage } from '../repository/company.repository.js';
 
-export function toCompanyProfile(company: Company) {
+export function toCompanyProfile(company: Company, includeBank: boolean) {
   return {
     id: company.id,
     name: company.name,
@@ -15,6 +15,16 @@ export function toCompanyProfile(company: Company) {
     nif: company.nif,
     stat: company.stat,
     rcs: company.rcs,
+    ...(includeBank
+      ? {
+        bank_name: company.bankName,
+        bank_account_holder: company.bankAccountHolder,
+        bank_account_number: company.bankAccountNumber,
+        bank_swift: company.bankSwift,
+        mobile_money_details: company.mobileMoneyDetails,
+        invoice_footer: company.invoiceFooter,
+      }
+      : {}),
     created_at: company.createdAt,
   };
 }

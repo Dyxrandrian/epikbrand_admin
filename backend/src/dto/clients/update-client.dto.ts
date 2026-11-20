@@ -5,6 +5,7 @@ import {
   ClientContactName,
   ClientEmail,
   ClientPhone,
+  ClientTaxId,
 } from './client-fields.js';
 
 export class UpdateClientDto {
@@ -27,6 +28,14 @@ export class UpdateClientDto {
   @IsOptional()
   @ClientPhone()
   phone?: string | null;
+
+  @IsOptional()
+  @ClientTaxId('Le NIF')
+  nif?: string | null;
+
+  @IsOptional()
+  @ClientTaxId('Le STAT')
+  stat?: string | null;
 
   @IsOptional()
   @ClientAddress()

@@ -38,3 +38,10 @@ export const ClientAddress = () =>
     IsString({ message: "L'adresse doit être un texte." }),
     MaxLength(500, { message: "L'adresse ne peut pas dépasser 500 caractères." }),
   );
+
+export const ClientTaxId = (label: string) =>
+  applyDecorators(
+    Transform(trimToNull),
+    IsString({ message: `${label} doit être un texte.` }),
+    MaxLength(50, { message: `${label} ne peut pas dépasser 50 caractères.` }),
+  );

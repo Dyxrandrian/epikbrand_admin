@@ -10,6 +10,8 @@ export function toClient(client: Client) {
     email: client.email,
     phone: client.phone,
     address: client.address,
+    nif: client.nif, 
+    stat: client.stat,
     archived_at: client.archivedAt,
     version: client.version, // à renvoyer lors d'une modification
     created_at: client.createdAt,

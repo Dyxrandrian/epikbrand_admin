@@ -8,11 +8,11 @@ import { CompanyService } from '../../services/company/company.service.js';
 
 @Controller('company')
 export class CompanyController {
-  constructor(private readonly company: CompanyService) {}
+  constructor(private readonly company: CompanyService) { }
 
   @Get()
-  get(@CurrentUser('companyId') companyId: string) {
-    return this.company.getProfile(companyId);
+  get(@CurrentUser() viewer: AuthenticatedUser) {
+    return this.company.getProfile(viewer);
   }
 
   @Roles(UserRole.ADMIN)
