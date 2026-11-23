@@ -1,8 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index, Check } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { User } from './user.entity.js';
 import { RequestStatus } from '../enums/app.enums.js';
 
+@Check('chk_training_review', `("status" = 'pending' AND "reviewed_at" IS NULL) OR ("status" IN ('approved', 'rejected') AND "reviewed_at" IS NOT NULL) OR "status" = 'cancelled'`)
+@Index('idx_training_company_status', { synchronize: false })
+@Index('idx_training_user_created', { synchronize: false })
+@Index('idx_training_approved_review', { synchronize: false })
 @Entity('training_requests')
 export class TrainingRequest {
   @PrimaryGeneratedColumn('uuid')

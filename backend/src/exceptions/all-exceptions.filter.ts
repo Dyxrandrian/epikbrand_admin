@@ -135,6 +135,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
           code: ErrorCode.BAD_REQUEST,
           message: 'Requête mal formée.',
         };
+      case '23P01': // contrainte d'exclusion
+        if (driver.constraint === 'excl_leave_no_overlap') {
+          return {
+            status: HttpStatus.UNPROCESSABLE_ENTITY,
+            code: ErrorCode.LEAVE_OVERLAP,
+            message: 'Cette période chevauche une autre demande de congé.',
+          };
+        }
+        return {
+          status: HttpStatus.CONFLICT,
+          code: ErrorCode.CONFLICT,
+          message: "Conflit avec l'état actuel de la ressource.",
+        };
       default:
         return INTERNAL;
     }

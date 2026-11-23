@@ -20,6 +20,8 @@ export enum AuditAction {
   SEND = 'send',
   VALIDATE = 'validate',
   PAY = 'pay',
+  APPROVE = 'approve',
+  REJECT = 'reject',
 }
 
 export enum AuditEntityType {
@@ -39,5 +41,7 @@ export enum AuditEntityType {
   EXPENSE_CATEGORY = 'expense_category',
   LABEL = 'label',
   INVOICE_PAYMENT = 'invoice_payment',
-
+  LEAVE_REQUEST = 'leave_request',
+  LEAVE_BALANCE = 'leave_balance',
+  TRAINING_REQUEST = 'training_request',
 }

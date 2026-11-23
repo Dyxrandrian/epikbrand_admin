@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, Check } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { User } from './user.entity.js';
 import type { LeaveType } from './leave-type.entity.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
 
+@Check('chk_leave_balance_allowance', '"allowance_days" >= 0')
+@Check('chk_leave_balance_year', '"year" BETWEEN 2000 AND 2100')
+@Index('idx_leave_balances_company_year', { synchronize: false })
 @Entity('leave_balances')
 @Unique(['userId', 'leaveTypeId', 'year'])
 export class LeaveBalance {

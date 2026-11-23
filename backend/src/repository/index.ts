@@ -17,3 +17,6 @@ export * from './file.repository.js';
 export * from './invoice.repository.js';
 export * from './invoice-payment.repository.js';
 export * from './expense.repository.js';
+export * from './leave-request.repository.js';
+export * from './leave-balance.repository.js';
+export * from './training-request.repository.js';

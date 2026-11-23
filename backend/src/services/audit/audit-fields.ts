@@ -113,3 +113,26 @@ export const EXPENSE_AUDIT_FIELDS = [
   'validatedAt',
   'validatedById',
 ] as const;
+
+export const LEAVE_REQUEST_AUDIT_FIELDS = [
+  'userId',
+  'leaveTypeId',
+  'startDate',
+  'endDate',
+  'startHalfDay',
+  'endHalfDay',
+  'daysCount',
+  'status',
+  'reviewedById',
+  'reviewedAt',
+  'reviewComment',
+] as const;
+
+export const TRAINING_REQUEST_AUDIT_FIELDS = [
+  'userId',
+  'trainingName',
+  'status',
+  'reviewedById',
+  'reviewedAt',
+  'reviewComment',
+] as const;

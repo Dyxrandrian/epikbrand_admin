@@ -1,10 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Check, Index, Exclusion } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { User } from './user.entity.js';
 import type { LeaveType } from './leave-type.entity.js';
 import { RequestStatus } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
-
+@Check('chk_leave_slots', `(("start_date" - DATE '2000-01-01') * 2 + CASE WHEN "start_half_day" THEN 1 ELSE 0 END) <= (("end_date" - DATE '2000-01-01') * 2 + CASE WHEN "end_half_day" THEN 0 ELSE 1 END)`)
+@Check('chk_leave_days', '"days_count" > 0')
+@Check('chk_leave_review', `("status" = 'pending' AND "reviewed_at" IS NULL) OR ("status" IN ('approved', 'rejected') AND "reviewed_at" IS NOT NULL) OR "status" = 'cancelled'`)
+@Exclusion('excl_leave_no_overlap', `USING gist ("user_id" WITH =, int4range((("start_date" - DATE '2000-01-01') * 2 + CASE WHEN "start_half_day" THEN 1 ELSE 0 END), (("end_date" - DATE '2000-01-01') * 2 + CASE WHEN "end_half_day" THEN 0 ELSE 1 END), '[]') WITH &&) WHERE ("status" IN ('pending', 'approved'))`)
+@Index('idx_leave_company_status_start', { synchronize: false })
+@Index('idx_leave_user_created', { synchronize: false })
 @Check('chk_leave_dates', '"end_date" >= "start_date"')
 @Entity('leave_requests')
 export class LeaveRequest {
@@ -48,6 +53,14 @@ export class LeaveRequest {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
+
+  /** Le premier jour ne compte que l'après-midi (le matin n'est pas pris) */
+  @Column({ name: 'start_half_day', type: 'boolean', default: false })
+  startHalfDay: boolean;
+
+  /** Le dernier jour ne compte que le matin (l'après-midi n'est pas pris) */
+  @Column({ name: 'end_half_day', type: 'boolean', default: false })
+  endHalfDay: boolean;
 
   @ManyToOne('Company', { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })

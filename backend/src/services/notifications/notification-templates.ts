@@ -1,9 +1,33 @@
 import { ProjectStatus, TaskStatus } from '../../enums/app.enums.js';
 import { NotificationType } from '../../enums/notification.enums.js';
+import { formatDate } from '../invoices/pdf/pdf-format.js';
 
 // Chemins du frontend : à adapter à vos routes
 export const taskLink = (id: string): string => `/tasks/${id}`;
 export const expenseLink = (id: string): string => `/expenses/${id}`;
+export const leaveLink = (id: string): string => `/leave-requests/${id}`;
+export const trainingLink = (id: string): string => `/training-requests/${id}`;
+
+type RequestDecision = 'approved' | 'rejected' | 'cancelled';
+
+const LEAVE_DECISION_TITLES: Record<RequestDecision, string> = {
+  approved: 'Demande de congé approuvée',
+  rejected: 'Demande de congé rejetée',
+  cancelled: 'Demande de congé annulée',
+};
+const TRAINING_DECISION_TITLES: Record<RequestDecision, string> = {
+  approved: 'Demande de formation approuvée',
+  rejected: 'Demande de formation rejetée',
+  cancelled: 'Demande de formation annulée',
+};
+const REQUEST_DECISION_VERBS: Record<RequestDecision, string> = {
+  approved: 'a été approuvée',
+  rejected: 'a été rejetée',
+  cancelled: 'a été annulée',
+};
+
+const withComment = (text: string, comment: string | null | undefined): string =>
+  comment ? `${text} Commentaire : ${comment}` : text;
 
 const EXPENSE_DECISION_TITLES = {
   validated: 'Dépense validée',
@@ -35,6 +59,57 @@ const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
 const quote = (title: string): string => `« ${title} »`;
 
 export const notificationTemplates = {
+
+  leaveRequestCreated: (
+    request: { id: string },
+    authorName: string,
+    startDate: string,
+    endDate: string,
+  ) => ({
+    type: NotificationType.LEAVE_REQUEST_CREATED,
+    title: 'Nouvelle demande de congé',
+    content: `${authorName} demande un congé du ${formatDate(startDate)} au ${formatDate(endDate)}.`,
+    redirectUrl: leaveLink(request.id),
+  }),
+
+  leaveRequestDecided: (
+    request: { id: string; startDate: string; endDate: string },
+    decision: RequestDecision,
+    comment?: string | null,
+  ) => ({
+    type: NotificationType.LEAVE_REQUEST_DECIDED,
+    title: LEAVE_DECISION_TITLES[decision],
+    content: withComment(
+      `Votre demande de congé du ${formatDate(request.startDate)} au ${formatDate(request.endDate)} ${REQUEST_DECISION_VERBS[decision]}.`,
+      comment,
+    ),
+    redirectUrl: leaveLink(request.id),
+  }),
+
+  trainingRequestCreated: (
+    request: { id: string; trainingName: string },
+    authorName: string,
+  ) => ({
+    type: NotificationType.TRAINING_REQUEST_CREATED,
+    title: 'Nouvelle demande de formation',
+    content: `${authorName} demande la formation ${quote(request.trainingName)}.`,
+    redirectUrl: trainingLink(request.id),
+  }),
+
+  trainingRequestDecided: (
+    request: { id: string; trainingName: string },
+    decision: RequestDecision,
+    comment?: string | null,
+  ) => ({
+    type: NotificationType.TRAINING_REQUEST_DECIDED,
+    title: TRAINING_DECISION_TITLES[decision],
+    content: withComment(
+      `Votre demande de formation ${quote(request.trainingName)} ${REQUEST_DECISION_VERBS[decision]}.`,
+      comment,
+    ),
+    redirectUrl: trainingLink(request.id),
+  }),
+
   taskAssigned: (task: { id: string; title: string }) => ({
     type: NotificationType.TASK_ASSIGNED,
     title: 'Nouvelle tâche assignée',

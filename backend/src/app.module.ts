@@ -19,6 +19,7 @@ import { FilesModule } from './module/files.module.js';
 import { InvoicesModule } from './module/invoices.module.js';
 import { IdempotencyModule } from './module/idempotency.module.js';
 import { ExpensesModule } from './module/expenses.module.js';
+import { HrModule } from './module/hr.module.js';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ExpensesModule } from './module/expenses.module.js';
     InvoicesModule,
     IdempotencyModule,
     ExpensesModule,
+    HrModule,
   ],
 })
 export class AppModule {}
