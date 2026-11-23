@@ -7,6 +7,7 @@ export const taskLink = (id: string): string => `/tasks/${id}`;
 export const expenseLink = (id: string): string => `/expenses/${id}`;
 export const leaveLink = (id: string): string => `/leave-requests/${id}`;
 export const trainingLink = (id: string): string => `/training-requests/${id}`;
+export const articleLink = (id: string): string => `/articles/${id}`;
 export const invoiceLink = (id: string): string => `/invoices/${id}`;
 export const INVOICES_LINK = '/invoices';
 export const EXPENSES_LINK = '/expenses';
@@ -67,6 +68,13 @@ const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
 const quote = (title: string): string => `« ${title} »`;
 
 export const notificationTemplates = {
+
+  articlePublished: (article: { id: string; title: string }, authorName: string) => ({
+    type: NotificationType.ARTICLE_PUBLISHED,
+    title: 'Nouvel article publié',
+    content: `${authorName} a publié l'article ${quote(article.title)}.`,
+    redirectUrl: articleLink(article.id),
+  }),
 
   leaveRequestCreated: (
     request: { id: string },
@@ -271,8 +279,8 @@ export const notificationTemplates = {
     type: NotificationType.APPROVAL_REMINDER,
     title: kind === 'leave' ? 'Demandes de congé en attente' : 'Demandes de formation en attente',
     content: `${count} ${kind === 'leave'
-        ? count > 1 ? 'demandes de congé attendent' : 'demande de congé attend'
-        : count > 1 ? 'demandes de formation attendent' : 'demande de formation attend'
+      ? count > 1 ? 'demandes de congé attendent' : 'demande de congé attend'
+      : count > 1 ? 'demandes de formation attendent' : 'demande de formation attend'
       } votre validation depuis plusieurs jours.`,
     redirectUrl: kind === 'leave' ? LEAVE_REQUESTS_LINK : TRAINING_REQUESTS_LINK,
   }),

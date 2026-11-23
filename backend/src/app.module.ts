@@ -22,6 +22,7 @@ import { ExpensesModule } from './module/expenses.module.js';
 import { HrModule } from './module/hr.module.js';
 import { PayrollModule } from './module/payroll.module.js';
 import { JobsModule } from './module/jobs.module.js';
+import { ArticlesModule } from './module/articles.module.js';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { JobsModule } from './module/jobs.module.js';
     HrModule,
     PayrollModule,
     JobsModule,
+    ArticlesModule,
   ],
 })
 export class AppModule {}

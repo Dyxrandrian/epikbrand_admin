@@ -24,3 +24,6 @@ export * from './payroll-rule.repository.js';
 export * from './compensation.repository.js';
 export * from './salary.repository.js';
 export * from './job-run.repository.js';
+export * from './article.repository.js';
+export * from './article-version.repository.js';
+export * from './agency-structure.repository.js';

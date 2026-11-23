@@ -169,3 +169,5 @@ export const PAYROLL_RULE_AUDIT_FIELDS = [
   'effectiveTo',
   'isActive',
 ] as const;
+
+export const ARTICLE_AUDIT_FIELDS = ['title', 'sectionId', 'categoryId', 'archivedAt'] as const;

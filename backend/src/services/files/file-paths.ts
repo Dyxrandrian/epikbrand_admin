@@ -14,3 +14,6 @@ const RECEIPT_URL_PATTERN = new RegExp(`^/${API_PREFIX}/files/([0-9a-f-]{36})/co
 /** Identifiant du fichier d'un justificatif, d'après l'URL stockée dans expenses.receipt_url. */
 export const receiptIdFromUrl = (url: string | null | undefined): string | null =>
   (url ? RECEIPT_URL_PATTERN.exec(url)?.[1] : undefined) ?? null;
+
+/** Identifiant du fichier d'une URL privée (/api/v1/files/<id>/content), ou null. */
+export const privateFileIdFromUrl = receiptIdFromUrl;

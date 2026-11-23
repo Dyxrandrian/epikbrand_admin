@@ -103,6 +103,31 @@ export class FileRepository extends TenantRepository<MediaAttachment> {
     return Number(rows[0].used);
   }
 
+  /** Parmi ces identifiants, ceux qui sont des images jointes à CET article. */
+  async imageAttachmentIds(
+    companyId: string,
+    articleId: string,
+    ids: readonly string[],
+  ): Promise<Set<string>> {
+    if (ids.length === 0) return new Set();
+    const rows: Array<{ id: string }> = await this.repo.manager.query(
+      `SELECT id FROM media_attachments
+        WHERE company_id = $1 AND purpose = 'attachment' AND article_id = $2
+          AND id = ANY($3::uuid[]) AND file_type LIKE 'image/%'`,
+      [this.requireCompanyId(companyId), articleId, [...ids]],
+    );
+    return new Set(rows.map((row) => row.id));
+  }
+
+  /** Clés de stockage des fichiers d'un article (suppression définitive). */
+  async keysOfArticle(companyId: string, articleId: string): Promise<string[]> {
+    const rows: Array<{ key: string }> = await this.repo.manager.query(
+      `SELECT file_url AS key FROM media_attachments WHERE company_id = $1 AND article_id = $2`,
+      [this.requireCompanyId(companyId), articleId],
+    );
+    return rows.map((row) => row.key);
+  }
+
   /** Verrou de transaction par entreprise : le contrôle du quota ne peut pas être doublé. */
   async lockQuota(companyId: string): Promise<void> {
     await this.repo.manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [

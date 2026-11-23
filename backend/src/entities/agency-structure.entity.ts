@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { StructureElementType } from './structure-element-type.entity.js';
-
+@Index('idx_agency_structure_type', { synchronize: false })
+@Index('uq_agency_structure_value', { synchronize: false })
 @Entity('agency_structure')
 export class AgencyStructure {
   @PrimaryGeneratedColumn('uuid')

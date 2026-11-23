@@ -69,6 +69,16 @@ export class NotificationRepository extends TenantRepository<Notification> {
     return counts;
   }
 
+  /** Tous les utilisateurs actifs de l'entreprise. */
+  async activeUserIds(companyId: string): Promise<string[]> {
+    this.assertCompany(companyId);
+    const rows: Array<{ id: string }> = await this.repo.manager.query(
+      `SELECT id FROM users WHERE company_id = $1 AND is_active = true`,
+      [companyId],
+    );
+    return rows.map((row) => row.id);
+  }
+
   /** 404 si la notification n'existe pas, n'est pas à cet utilisateur ou est d'une autre entreprise. */
   async getOwned(companyId: string, userId: string, id: string): Promise<Notification> {
     const item = await this.scoped(companyId)

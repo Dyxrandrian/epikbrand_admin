@@ -14,6 +14,9 @@ import { ResponseInterceptor } from './interceptors/response.interceptor.js';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService);
+  // Les articles peuvent peser jusqu'à 1 Mo de JSON : limite relevée (100 ko par défaut)
+  app.useBodyParser('json', { limit: '2mb' });
+
 
   // Derrière un proxy, req.ip doit venir de X-Forwarded-For (limitation de débit, audit)
   const trustProxy = config.get<string>('TRUST_PROXY')?.trim();

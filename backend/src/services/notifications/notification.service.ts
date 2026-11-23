@@ -75,6 +75,10 @@ export class NotificationService {
     return this.notifications.managerIds(companyId);
   }
 
+  activeUserIds(companyId: string): Promise<string[]> {
+    return this.notifications.activeUserIds(companyId);
+  }
+
   private async deliver(input: NotifyInput): Promise<void> {
     const redirectUrl = this.safeRedirect(input.redirectUrl);
     const title = truncate(input.title, MAX_TITLE);
