@@ -13,4 +13,10 @@ export enum NotificationType {
   ARTICLE_PUBLISHED = 'article_published',
   EXPENSE_SUBMITTED = 'expense_submitted',
   EXPENSE_DECIDED = 'expense_decided',
+  TASK_REMINDER = 'task_reminder',
+  PROJECT_REMINDER = 'project_reminder',
+  INVOICE_REMINDER = 'invoice_reminder',
+  EXPENSE_REMINDER = 'expense_reminder',
+  EXPENSE_RECURRING_GENERATED = 'expense_recurring_generated',
+  APPROVAL_REMINDER = 'approval_reminder',
 }

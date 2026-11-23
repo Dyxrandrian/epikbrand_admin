@@ -136,3 +136,36 @@ export const TRAINING_REQUEST_AUDIT_FIELDS = [
   'reviewedAt',
   'reviewComment',
 ] as const;
+
+export const SALARY_AUDIT_FIELDS = [
+  'userId',
+  'month',
+  'status',
+  'paymentDate',
+  'paymentMethod',
+  'baseSalary',
+  'dependentsCount',
+  'grossSalary',
+  'totalDeductions',
+  'netSalary',
+] as const;
+
+export const PAYROLL_RULE_AUDIT_FIELDS = [
+  'code',
+  'label',
+  'itemType',
+  'ruleType',
+  'baseKind',
+  'rate',
+  'fixedAmount',
+  'baseCap',
+  'roundingStep',
+  'brackets',
+  'familyReduction',
+  'minimumAmount',
+  'reducesTaxableIncome',
+  'position',
+  'effectiveFrom',
+  'effectiveTo',
+  'isActive',
+] as const;

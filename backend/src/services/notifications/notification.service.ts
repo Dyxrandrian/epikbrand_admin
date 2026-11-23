@@ -70,6 +70,11 @@ export class NotificationService {
     }
   }
 
+  /** Administrateurs et managers actifs de l'entreprise (pour grouper des destinataires). */
+  managerIds(companyId: string): Promise<string[]> {
+    return this.notifications.managerIds(companyId);
+  }
+
   private async deliver(input: NotifyInput): Promise<void> {
     const redirectUrl = this.safeRedirect(input.redirectUrl);
     const title = truncate(input.title, MAX_TITLE);

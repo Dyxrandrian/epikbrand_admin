@@ -37,3 +37,5 @@ export * from './user-token.entity.js';
 export * from './user.entity.js';
 export * from './invoice-payment.entity.js';
 export * from './idempotency-key.entity.js';
+export * from './payroll-rule.entity.js';
+export * from './scheduled-job-run.entity.js';

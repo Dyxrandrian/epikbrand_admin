@@ -70,6 +70,36 @@ export const NOTIFICATION_CATALOG: ReadonlyArray<{
       label: 'Décision sur une dépense',
       description: 'Quand votre dépense est validée, payée ou annulée.',
     },
+    {
+      type: NotificationType.TASK_REMINDER,
+      label: "Rappel d'échéance de tâche",
+      description: 'La veille et le jour de l\'échéance d\'une de vos tâches.',
+    },
+    {
+      type: NotificationType.PROJECT_REMINDER,
+      label: "Rappel d'échéance de projet",
+      description: "La veille et le jour de l'échéance d'un projet auquel vous participez (ou que vous gérez).",
+    },
+    {
+      type: NotificationType.INVOICE_REMINDER,
+      label: "Rappel d'échéance de facture",
+      description: "Pour les managers et administrateurs : une facture arrive à échéance.",
+    },
+    {
+      type: NotificationType.EXPENSE_REMINDER,
+      label: "Rappel d'échéance de dépense",
+      description: "Pour les managers et administrateurs : une dépense est à payer.",
+    },
+    {
+      type: NotificationType.EXPENSE_RECURRING_GENERATED,
+      label: 'Dépense récurrente générée',
+      description: "Pour les managers et administrateurs : une dépense récurrente vient d'être créée.",
+    },
+    {
+      type: NotificationType.APPROVAL_REMINDER,
+      label: 'Demandes en attente de validation',
+      description: 'Pour les managers et administrateurs : des demandes attendent votre décision depuis plusieurs jours.',
+    },
   ];
 
 export type NotificationChannel = 'in_app' | 'email';

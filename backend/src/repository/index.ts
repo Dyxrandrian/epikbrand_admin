@@ -20,3 +20,7 @@ export * from './expense.repository.js';
 export * from './leave-request.repository.js';
 export * from './leave-balance.repository.js';
 export * from './training-request.repository.js';
+export * from './payroll-rule.repository.js';
+export * from './compensation.repository.js';
+export * from './salary.repository.js';
+export * from './job-run.repository.js';

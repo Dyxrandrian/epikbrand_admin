@@ -15,7 +15,7 @@ type CompanyChanges = Parameters<Repository<Company>['update']>[1];
 
 @Injectable()
 export class CompanyRepository {
-  constructor(@InjectRepository(Company) private readonly repo: Repository<Company>) {}
+  constructor(@InjectRepository(Company) private readonly repo: Repository<Company>) { }
 
   async getById(companyId: string, manager?: EntityManager): Promise<Company> {
     const company = await this.repoFor(manager).findOne({
@@ -70,5 +70,21 @@ export class CompanyRepository {
       throw new Error('companyId obligatoire.');
     }
     return companyId;
+  }
+
+  /**
+ * Toutes les entreprises : réservé aux tâches planifiées, qui n'ont pas de requête pour leur
+ * fournir un company_id. Chaque tâche travaille ensuite entreprise par entreprise.
+ */
+  async listForJobs(): Promise<Array<{ id: string; timezone: string; defaultCurrency: string }>> {
+    const companies = await this.repo.find({
+      select: { id: true, timezone: true, defaultCurrency: true },
+      order: { createdAt: 'ASC' },
+    });
+    return companies.map((company) => ({
+      id: company.id,
+      timezone: company.timezone,
+      defaultCurrency: company.defaultCurrency,
+    }));
   }
 }

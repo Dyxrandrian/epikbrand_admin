@@ -143,6 +143,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
             message: 'Cette période chevauche une autre demande de congé.',
           };
         }
+        if (driver.constraint === 'excl_payroll_rule_period') {
+          return {
+            status: HttpStatus.CONFLICT,
+            code: ErrorCode.RULE_OVERLAP,
+            message: 'Une règle active de même code est déjà en vigueur sur cette période.',
+          };
+        }
         return {
           status: HttpStatus.CONFLICT,
           code: ErrorCode.CONFLICT,

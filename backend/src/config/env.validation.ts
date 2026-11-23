@@ -43,5 +43,16 @@ export function validateEnv(env: Record<string, unknown>) {
     }
   }
 
+  const runAt = env.JOBS_RUN_AT;
+  if (runAt !== undefined && runAt !== '' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(String(runAt))) {
+    throw new Error('JOBS_RUN_AT doit être une heure au format HH:MM (exemple : 06:00).');
+  }
+  for (const key of ['TRASH_RETENTION_DAYS', 'NOTIFICATION_RETENTION_DAYS', 'AUDIT_RETENTION_DAYS']) {
+    const value = env[key];
+    if (value !== undefined && value !== '' && !/^\d+$/.test(String(value))) {
+      throw new Error(`${key} doit être un nombre entier de jours (0 pour désactiver).`);
+    }
+  }
+
   return env;
 }

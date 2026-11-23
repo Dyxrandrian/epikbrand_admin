@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Index, Check } from 'typeorm';
 import type { Company } from './company.entity.js';
 import type { UserToken } from './user-token.entity.js';
 import type { RefreshToken } from './refresh-token.entity.js';
-import { UserRole } from '../enums/app.enums.js';
+import { numericTransformer } from '../transformers/numeric.transformer.js';
 
+import { UserRole } from '../enums/app.enums.js';
+@Check('chk_user_base_salary', '"base_salary" IS NULL OR "base_salary" >= 0')
+@Check('chk_user_dependents', '"dependents_count" BETWEEN 0 AND 50')
 @Index('idx_search_users_full', { synchronize: false })
 @Index('idx_search_users', { synchronize: false })
 @Entity('users')
@@ -65,6 +68,14 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
+
+  /** Salaire de base mensuel : jamais chargé avec l'utilisateur, lu uniquement par le module Paie */
+  @Column({ name: 'base_salary', type: 'numeric', precision: 12, scale: 2, nullable: true, select: false, transformer: numericTransformer })
+  baseSalary?: number | null;
+
+  /** Personnes à charge (réduction IRSA) : même précaution */
+  @Column({ name: 'dependents_count', type: 'int', default: 0, select: false })
+  dependentsCount?: number;
 
   // Use string 'Company' and type-only callback parameters
   @ManyToOne('Company', (company: any) => company.users, { nullable: false, onDelete: 'CASCADE' })

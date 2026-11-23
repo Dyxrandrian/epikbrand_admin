@@ -7,6 +7,14 @@ export const taskLink = (id: string): string => `/tasks/${id}`;
 export const expenseLink = (id: string): string => `/expenses/${id}`;
 export const leaveLink = (id: string): string => `/leave-requests/${id}`;
 export const trainingLink = (id: string): string => `/training-requests/${id}`;
+export const invoiceLink = (id: string): string => `/invoices/${id}`;
+export const INVOICES_LINK = '/invoices';
+export const EXPENSES_LINK = '/expenses';
+export const LEAVE_REQUESTS_LINK = '/leave-requests';
+export const TRAINING_REQUESTS_LINK = '/training-requests';
+
+type When = 'today' | 'tomorrow';
+const WHEN_TEXT: Record<When, string> = { today: "aujourd'hui", tomorrow: 'demain' };
 
 type RequestDecision = 'approved' | 'rejected' | 'cancelled';
 
@@ -160,5 +168,112 @@ export const notificationTemplates = {
     title: EXPENSE_DECISION_TITLES[decision],
     content: `Votre dépense ${quote(expense.title)} ${EXPENSE_DECISION_VERBS[decision]}.`,
     redirectUrl: expenseLink(expense.id),
+  }),
+
+  invoiceOverdue: (invoice: {
+    id: string;
+    number: string;
+    clientName: string;
+    dueDate: string;
+    balance: string;
+  }) => ({
+    type: NotificationType.INVOICE_OVERDUE,
+    title: 'Facture en retard',
+    content: `La facture ${invoice.number} de ${quote(invoice.clientName)} est en retard depuis le ${formatDate(invoice.dueDate)} (reste à payer : ${invoice.balance}).`,
+    redirectUrl: invoiceLink(invoice.id),
+  }),
+
+  invoicesOverdue: (count: number) => ({
+    type: NotificationType.INVOICE_OVERDUE,
+    title: 'Factures en retard',
+    content: `${count} autre(s) facture(s) sont passées en retard.`,
+    redirectUrl: INVOICES_LINK,
+  }),
+
+  expenseRecurrenceGenerated: (expense: { id: string; title: string }, dates: string[]) => ({
+    type: NotificationType.EXPENSE_RECURRING_GENERATED,
+    title: 'Dépense récurrente générée',
+    content:
+      dates.length === 1
+        ? `La dépense récurrente ${quote(expense.title)} a été générée pour le ${formatDate(dates[0])}.`
+        : `${dates.length} occurrences de la dépense récurrente ${quote(expense.title)} ont été générées.`,
+    redirectUrl: expenseLink(expense.id),
+  }),
+
+  tasksDue: (tasks: ReadonlyArray<{ id: string; title: string }>, when: When) =>
+    tasks.length === 1
+      ? {
+        type: NotificationType.TASK_REMINDER,
+        title: `Tâche à terminer ${WHEN_TEXT[when]}`,
+        content: `La tâche ${quote(tasks[0].title)} arrive à échéance ${WHEN_TEXT[when]}.`,
+        redirectUrl: taskLink(tasks[0].id),
+      }
+      : {
+        type: NotificationType.TASK_REMINDER,
+        title: `Tâches à terminer ${WHEN_TEXT[when]}`,
+        content: `${tasks.length} de vos tâches arrivent à échéance ${WHEN_TEXT[when]}.`,
+        redirectUrl: MY_TASKS_LINK,
+      },
+
+  projectDue: (project: { id: string; title: string }, when: When) => ({
+    type: NotificationType.PROJECT_REMINDER,
+    title: `Échéance de projet ${WHEN_TEXT[when]}`,
+    content: `Le projet ${quote(project.title)} doit être livré ${WHEN_TEXT[when]}.`,
+    redirectUrl: projectLink(project.id),
+  }),
+
+  invoiceDue: (
+    invoice: { id: string; number: string; clientName: string; balance: string },
+    when: When,
+  ) => ({
+    type: NotificationType.INVOICE_REMINDER,
+    title: `Facture à échéance ${WHEN_TEXT[when]}`,
+    content: `La facture ${invoice.number} de ${quote(invoice.clientName)} arrive à échéance ${WHEN_TEXT[when]} (reste à payer : ${invoice.balance}).`,
+    redirectUrl: invoiceLink(invoice.id),
+  }),
+
+  invoicesDue: (count: number, when: When) => ({
+    type: NotificationType.INVOICE_REMINDER,
+    title: `Factures à échéance ${WHEN_TEXT[when]}`,
+    content: `${count} autre(s) facture(s) arrivent à échéance ${WHEN_TEXT[when]}.`,
+    redirectUrl: INVOICES_LINK,
+  }),
+
+  expenseDue: (expense: { id: string; title: string; amount: string }, when: When) => ({
+    type: NotificationType.EXPENSE_REMINDER,
+    title: `Dépense à payer ${WHEN_TEXT[when]}`,
+    content: `La dépense ${quote(expense.title)} (${expense.amount}) est à payer ${WHEN_TEXT[when]}.`,
+    redirectUrl: expenseLink(expense.id),
+  }),
+
+  expensesDue: (count: number, when: When) => ({
+    type: NotificationType.EXPENSE_REMINDER,
+    title: `Dépenses à payer ${WHEN_TEXT[when]}`,
+    content: `${count} autre(s) dépense(s) sont à payer ${WHEN_TEXT[when]}.`,
+    redirectUrl: EXPENSES_LINK,
+  }),
+
+  expenseOverdue: (expense: { id: string; title: string; amount: string; dueDate: string }) => ({
+    type: NotificationType.EXPENSE_DUE,
+    title: 'Dépense échue',
+    content: `La dépense ${quote(expense.title)} (${expense.amount}) n'a pas été payée à son échéance du ${formatDate(expense.dueDate)}.`,
+    redirectUrl: expenseLink(expense.id),
+  }),
+
+  expensesOverdue: (count: number) => ({
+    type: NotificationType.EXPENSE_DUE,
+    title: 'Dépenses échues',
+    content: `${count} autre(s) dépense(s) sont échues sans paiement.`,
+    redirectUrl: EXPENSES_LINK,
+  }),
+
+  approvalReminder: (kind: 'leave' | 'training', count: number) => ({
+    type: NotificationType.APPROVAL_REMINDER,
+    title: kind === 'leave' ? 'Demandes de congé en attente' : 'Demandes de formation en attente',
+    content: `${count} ${kind === 'leave'
+        ? count > 1 ? 'demandes de congé attendent' : 'demande de congé attend'
+        : count > 1 ? 'demandes de formation attendent' : 'demande de formation attend'
+      } votre validation depuis plusieurs jours.`,
+    redirectUrl: kind === 'leave' ? LEAVE_REQUESTS_LINK : TRAINING_REQUESTS_LINK,
   }),
 };

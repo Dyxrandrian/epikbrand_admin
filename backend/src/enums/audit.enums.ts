@@ -22,6 +22,7 @@ export enum AuditAction {
   PAY = 'pay',
   APPROVE = 'approve',
   REJECT = 'reject',
+  RUN = 'run',
 }
 
 export enum AuditEntityType {
@@ -44,4 +45,6 @@ export enum AuditEntityType {
   LEAVE_REQUEST = 'leave_request',
   LEAVE_BALANCE = 'leave_balance',
   TRAINING_REQUEST = 'training_request',
+  PAYROLL_RULE = 'payroll_rule',
+  SCHEDULED_JOB = 'scheduled_job',
 }
