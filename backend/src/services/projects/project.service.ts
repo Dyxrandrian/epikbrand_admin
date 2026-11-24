@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { mapDto } from '../../dto/map-dto.js';
+import { toProfitability } from '../dashboards/dashboard-support.js';
 import type {
   ChangeProjectStatusDto,
   CreateProjectDto,
@@ -90,7 +91,7 @@ export class ProjectService {
     );
   }
 
-  /** Fiche projet (fichiers, dépenses, factures et rentabilité : modules à venir). */
+  /** Fiche projet ; fichiers : GET /projects/:id/files. La rentabilité est réservée à admin et manager. */
   async get(viewer: AuthenticatedUser, id: string) {
     const privileged = isManagerOrAdmin(viewer);
     const { companyId } = viewer;
@@ -103,19 +104,29 @@ export class ProjectService {
       throw new ResourceNotFoundException('Projet');
     }
 
-    const [today, stats, team] = await Promise.all([
-      this.todayFor(companyId),
+    const company = await this.companies.getById(companyId);
+    const [stats, team, profitability] = await Promise.all([
       this.projects.taskStats(companyId, [id]),
       this.projects.team(companyId, id),
+      privileged
+        ? this.projects.profitability(companyId, company.defaultCurrency, {
+          ids: [id],
+          includeArchived: true,
+          limit: 1,
+        })
+        : Promise.resolve([]),
     ]);
 
     return {
       ...toProject(project, {
         includeBudget: privileged,
-        today,
+        today: todayIn(company.timezone),
         stats: stats.get(id) ?? emptyTaskStats(),
       }),
       team: team.map(toTeamMember),
+      ...(privileged && profitability[0]
+        ? { profitability: toProfitability(profitability[0]) }
+        : {}),
     };
   }
 

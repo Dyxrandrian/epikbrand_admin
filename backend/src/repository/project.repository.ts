@@ -18,6 +18,17 @@ export interface TaskStats {
   done: number;
 }
 
+export interface ProjectProfitability {
+  id: string;
+  title: string;
+  status: string;
+  budgetHt: number | null;
+  invoicedHt: number;
+  invoicedTtc: number;
+  collectedTtc: number;
+  expensesHt: number;
+}
+
 export const emptyTaskStats = (): TaskStats => ({
   total: 0,
   todo: 0,
@@ -243,6 +254,60 @@ export class ProjectRepository extends ArchivableTenantRepository<Project> {
       [companyId, projectId],
     );
     return rows[0];
+  }
+
+  /**
+ * Budget, facturé (factures moins avoirs), encaissé et dépenses d'un ou plusieurs projets, dans la
+ * devise de l'entreprise. Sans `ids`, seuls les projets qui ont une activité financière sont listés.
+ */
+  async profitability(
+    companyId: string,
+    currency: string,
+    options: { ids?: string[]; includeArchived: boolean; limit: number },
+  ): Promise<ProjectProfitability[]> {
+    const rows: Array<Record<string, string>> = await this.repo.manager.query(
+      `SELECT * FROM (
+         SELECT p.id, p.title, p.status::text AS status, p.budget_ht::text AS budget,
+                COALESCE((SELECT SUM(CASE WHEN i.type = 'invoice' THEN i.total_ht ELSE -i.total_ht END)
+                            FROM invoices i
+                           WHERE i.company_id = p.company_id AND i.project_id = p.id
+                             AND i.type IN ('invoice', 'credit_note') AND i.status IN ('sent', 'overdue', 'paid')
+                             AND i.currency = $2), 0)::text AS invoiced_ht,
+                COALESCE((SELECT SUM(CASE WHEN i.type = 'invoice' THEN i.total_ttc ELSE -i.total_ttc END)
+                            FROM invoices i
+                           WHERE i.company_id = p.company_id AND i.project_id = p.id
+                             AND i.type IN ('invoice', 'credit_note') AND i.status IN ('sent', 'overdue', 'paid')
+                             AND i.currency = $2), 0)::text AS invoiced_ttc,
+                COALESCE((SELECT SUM(pay.amount)
+                            FROM invoice_payments pay
+                            JOIN invoices i ON i.id = pay.invoice_id AND i.company_id = pay.company_id
+                           WHERE pay.company_id = p.company_id AND i.project_id = p.id
+                             AND i.currency = $2), 0)::text AS collected,
+                COALESCE((SELECT SUM(e.amount_ht)
+                            FROM expenses e
+                           WHERE e.company_id = p.company_id AND e.project_id = p.id
+                             AND e.status <> 'cancelled'), 0)::text AS expenses
+           FROM projects p
+          WHERE p.company_id = $1
+            AND ($3::uuid[] IS NULL OR p.id = ANY($3::uuid[]))
+            AND ($4::boolean OR p.archived_at IS NULL)
+       ) x
+        WHERE $3::uuid[] IS NOT NULL OR x.invoiced_ht::numeric <> 0 OR x.expenses::numeric <> 0
+        ORDER BY x.invoiced_ht::numeric DESC, x.title ASC, x.id ASC
+        LIMIT $5`,
+      [this.requireCompanyId(companyId), currency, options.ids ?? null, options.includeArchived, options.limit],
+    );
+
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      status: row.status,
+      budgetHt: row.budget === null ? null : Number(row.budget),
+      invoicedHt: Number(row.invoiced_ht),
+      invoicedTtc: Number(row.invoiced_ttc),
+      collectedTtc: Number(row.collected),
+      expensesHt: Number(row.expenses),
+    }));
   }
 
   /**

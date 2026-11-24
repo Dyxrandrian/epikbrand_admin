@@ -35,6 +35,7 @@ export interface SellerSnapshot {
   invoice_footer: string | null;
 }
 
+
 @Check('chk_invoice_dates', '"due_date" IS NULL OR "due_date" >= "issue_date"')
 @Check('chk_invoice_number_when_issued', `"status" = 'draft' OR "invoice_number" IS NOT NULL`)
 @Check('chk_invoice_discount', `("discount_type" IS NULL AND "discount_value" = 0 AND "discount_amount" = 0) OR ("discount_type" = 'percent' AND "discount_value" > 0 AND "discount_value" <= 100) OR ("discount_type" = 'amount' AND "discount_value" > 0)`)
@@ -47,6 +48,8 @@ export interface SellerSnapshot {
 @Check('chk_invoice_valid_until', '"valid_until" IS NULL OR "valid_until" >= "issue_date"')
 @Check('chk_invoice_credit_source', `"type" <> 'credit_note' OR "source_document_id" IS NOT NULL`)
 @Index('idx_invoices_client', { synchronize: false })
+@Index('idx_invoices_company_due', { synchronize: false })
+@Index('idx_invoices_quote_accepted', { synchronize: false })
 @Index('idx_search_invoice_number', { synchronize: false })
 @Index('idx_invoices_company_issue', { synchronize: false })
 @Index('idx_invoices_company_status', { synchronize: false })

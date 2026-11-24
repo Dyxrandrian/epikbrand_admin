@@ -15,6 +15,7 @@ import { numericTransformer } from '../transformers/numeric.transformer.js';
 @Check('chk_expense_recurrence_value', '"is_recurring" = true OR "recurrence" IS NULL')
 @Check('chk_expense_child_not_model', '"parent_expense_id" IS NULL OR "is_recurring" = false')
 @Index('idx_expenses_company_date', { synchronize: false })
+@Index('idx_expenses_paid', { synchronize: false })
 @Index('idx_expenses_company_status', { synchronize: false })
 @Index('idx_expenses_due_open', { synchronize: false })
 @Index('idx_expenses_project', { synchronize: false })

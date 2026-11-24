@@ -7,7 +7,7 @@ import type { TaskLabel } from './task-label.entity.js';
 import type { TaskComment } from './task-comment.entity.js';
 import { TaskStatus, TaskPriority } from '../enums/app.enums.js';
 import { numericTransformer } from '../transformers/numeric.transformer.js';
-
+@Index('idx_tasks_completed', { synchronize: false })
 @Check('chk_task_dates', '"end_date" IS NULL OR "start_date" IS NULL OR "end_date" >= "start_date"')
 @Index('idx_search_tasks', { synchronize: false })
 @Index('idx_tasks_project', { synchronize: false })

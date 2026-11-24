@@ -10,6 +10,7 @@ import { numericTransformer } from '../transformers/numeric.transformer.js';
 @Check('chk_salary_amounts', '"base_salary" >= 0 AND "gross_salary" >= 0 AND "total_deductions" >= 0 AND "net_salary" >= 0 AND "dependents_count" BETWEEN 0 AND 50')
 @Check('chk_salary_payment', `("status" = 'paid' AND "payment_date" IS NOT NULL AND "payment_method" IS NOT NULL) OR ("status" <> 'paid' AND "payment_date" IS NULL AND "payment_method" IS NULL)`)
 @Index('idx_salaries_company_month', { synchronize: false })
+@Index('idx_salaries_paid', { synchronize: false })
 @Entity('salaries')
 @Unique('unique_user_monthly_salary', ['companyId', 'userId', 'month'])
 export class Salary {

@@ -23,6 +23,7 @@ import { HrModule } from './module/hr.module.js';
 import { PayrollModule } from './module/payroll.module.js';
 import { JobsModule } from './module/jobs.module.js';
 import { ArticlesModule } from './module/articles.module.js';
+import { DashboardsModule } from './module/dashboards.module.js';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ArticlesModule } from './module/articles.module.js';
     PayrollModule,
     JobsModule,
     ArticlesModule,
+    DashboardsModule,
   ],
 })
 export class AppModule {}

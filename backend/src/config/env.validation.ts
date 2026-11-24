@@ -53,6 +53,10 @@ export function validateEnv(env: Record<string, unknown>) {
       throw new Error(`${key} doit être un nombre entier de jours (0 pour désactiver).`);
     }
   }
+  const ttl = env.DASHBOARD_CACHE_TTL_SECONDS;
+  if (ttl !== undefined && ttl !== '' && !/^\d+$/.test(String(ttl))) {
+    throw new Error('DASHBOARD_CACHE_TTL_SECONDS doit être un nombre entier de secondes (0 pour désactiver).');
+  }
 
   return env;
 }

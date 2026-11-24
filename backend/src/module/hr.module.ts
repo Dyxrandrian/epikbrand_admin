@@ -31,6 +31,6 @@ import { CompanyModule } from './company.module.js';
     LeaveRequestService,
     TrainingRequestService,
   ],
-  exports: [LeaveRequestRepository, LeaveBalanceRepository, TrainingRequestRepository],
+  exports: [LeaveRequestRepository, LeaveBalanceRepository, TrainingRequestRepository,  LeaveBalanceService],
 })
 export class HrModule {}
